@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Billing - Forge</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background: #0a0a0a; color: #fff; }
+    nav { background:#111; padding:15px 30px; display:flex; justify-content:space-between; align-items:center; }
+    .logo { color:#ff6a00; text-decoration:none; font-size:1.6rem; font-weight:700; letter-spacing:2px; }
+    .nav-links { display:flex; gap:12px; flex-wrap:wrap; }
+    .nav-links a, .nav-links button { color:#fff; text-decoration:none; background:#222; border:none; padding:8px 12px; border-radius:8px; cursor:pointer; }
+    .nav-links a.active { background:#ff6a00; color:#000; font-weight:700; }
+    .wrap { max-width:900px; margin:30px auto; padding:0 20px; }
+    .card { background:#1e1e1e; border:1px solid #2f2f2f; border-radius:14px; padding:24px; }
+    h1 { color:#ff6a00; margin-bottom:16px; }
+    .grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+    .full { grid-column: span 2; }
+    label { font-size:0.9rem; color:#bdbdbd; }
+    input { width:100%; background:#121212; border:1px solid #333; color:#fff; padding:10px; border-radius:10px; margin-top:6px; }
+    button { margin-top:12px; background:#ff6a00; color:#000; border:none; border-radius:10px; padding:10px 14px; font-weight:700; cursor:pointer; }
+    .note { margin-top:10px; color:#9be39b; }
+    @media (max-width:700px){ .grid{grid-template-columns:1fr;} .full{grid-column:span 1;} }
+  </style>
+</head>
+<body>
+  <nav>
+    <a class="logo" href="index.html">Forge</a>
+    <div class="nav-links">
+      <a href="custom-builds.html">Custom Builds</a>
+      <a href="purchases.html">Purchases</a>
+      <a href="account.html">Account</a>
+      <a class="active" href="billing.html">Billing</a>
+      <button onclick="logout()">Logout</button>
+      <a href="cart.html">Cart</a>
+    </div>
+  </nav>
+
+  <div class="wrap">
+    <div class="card">
+      <h1>Billing</h1>
+      <form id="billingForm" class="grid">
+        <div class="full">
+          <label>Cardholder Name
+            <input id="cardName" required />
+          </label>
+        </div>
+        <div class="full">
+          <label>Card Number
+            <input id="cardNumber" maxlength="19" placeholder="1234 5678 9012 3456" required />
+          </label>
+        </div>
+        <div>
+          <label>Expiry (MM/YY)
+            <input id="cardExpiry" placeholder="08/30" required />
+          </label>
+        </div>
+        <div>
+          <label>CVV
+            <input id="cardCvv" maxlength="4" required />
+          </label>
+        </div>
+        <div class="full">
+          <label>Billing Zip
+            <input id="billingZip" required />
+          </label>
+        </div>
+        <div class="full">
+          <button type="submit">Save Payment Method</button>
+        </div>
+      </form>
+      <p class="note" id="note"></p>
+    </div>
+  </div>
+
+  <script>
+    function getSession(){ return JSON.parse(sessionStorage.getItem('sessionUser') || localStorage.getItem('sessionUser') || 'null'); }
+    function logout(){ sessionStorage.removeItem('sessionUser'); localStorage.removeItem('sessionUser'); window.location.href='login.html'; }
+    const session = getSession();
+    if (!session) window.location.href = 'login.html';
+    if (session && session.role === 'admin') window.location.href = 'admin-dashboard.html';
+
+    function mask(number){
+      const raw = number.replace(/\D/g, '');
+      if (raw.length < 4) return '****';
+      return `**** **** **** ${raw.slice(-4)}`;
+    }
+
+    const allBilling = JSON.parse(localStorage.getItem('billingByUser') || '{}');
+    const saved = session ? allBilling[session.email] : null;
+    if (saved) {
+      cardName.value = saved.cardName || '';
+      cardNumber.value = saved.cardLast4 ? `**** **** **** ${saved.cardLast4}` : '';
+      cardExpiry.value = saved.cardExpiry || '';
+      billingZip.value = saved.billingZip || '';
+    }
+
+    billingForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const map = JSON.parse(localStorage.getItem('billingByUser') || '{}');
+      map[session.email] = {
+        cardName: cardName.value.trim(),
+        cardLast4: cardNumber.value.replace(/\D/g, '').slice(-4),
+        cardExpiry: cardExpiry.value.trim(),
+        billingZip: billingZip.value.trim(),
+        updatedAt: new Date().toISOString()
+      };
+      localStorage.setItem('billingByUser', JSON.stringify(map));
+      cardNumber.value = mask(cardNumber.value);
+      cardCvv.value = '';
+      note.textContent = 'Billing method saved.';
+    });
+  </script>
+</body>
+</html>

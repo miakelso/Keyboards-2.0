@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shop Pre-Built Keyboards - Forge</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: #0a0a0a;
+      color: #fff;
+      scroll-behavior: smooth;
+    }
+
+    /* Navbar */
+    nav {
+      width: 100%;
+      background-color: #111;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    }
+
+    .logo {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: #ff6a00;
+      text-decoration: none;
+      letter-spacing: 2px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 25px;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: #fff;
+      font-weight: 500;
+      padding: 8px 12px;
+      border-radius: 6px;
+      transition: 0.3s;
+    }
+
+    .nav-links a:hover {
+      background-color: #ff6a00;
+      color: #000;
+    }
+
+    .menu-toggle {
+      display: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+      }
+      .nav-links.mobile-active {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        top: 60px;
+        right: 30px;
+        background-color: #111;
+        padding: 15px;
+        border-radius: 8px;
+      }
+      .menu-toggle {
+        display: block;
+      }
+    }
+
+    /* Catalog Section */
+    #catalog {
+      padding: 50px 20px;
+      background-color: #1e1e1e;
+      min-height: 100vh;
+    }
+
+    #catalog h1 {
+      text-align: center;
+      font-size: 3rem;
+      color: #ff6a00;
+      margin-bottom: 50px;
+    }
+
+    .keyboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .keyboard-card {
+      background-color: #2a2a2a;
+      border-radius: 15px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .keyboard-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 10px 30px rgba(255, 106, 0, 0.3);
+    }
+
+    .keyboard-card img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+
+    .keyboard-info {
+      padding: 20px;
+    }
+
+    .keyboard-info h3 {
+      font-size: 1.5rem;
+      color: #ff6a00;
+      margin-bottom: 10px;
+    }
+
+    .keyboard-info .price {
+      font-size: 1.3rem;
+      color: #fff;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .keyboard-info .short-desc {
+      color: #ccc;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    /* Product Detail Section */
+    #product-detail {
+      display: none;
+      padding: 50px 20px;
+      background-color: #1e1e1e;
+      min-height: 100vh;
+    }
+
+    .detail-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 50px;
+    }
+
+    .back-btn {
+      display: inline-block;
+      margin-bottom: 30px;
+      padding: 10px 20px;
+      background-color: #333;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 8px;
+      transition: 0.3s;
+    }
+
+    .back-btn:hover {
+      background-color: #ff6a00;
+      color: #000;
+    }
+
+    .product-image {
+      width: 100%;
+      border-radius: 15px;
+      object-fit: cover;
+    }
+
+    .product-info h2 {
+      font-size: 2.5rem;
+      color: #ff6a00;
+      margin-bottom: 20px;
+    }
+
+    .product-info .product-price {
+      font-size: 2rem;
+      color: #fff;
+      font-weight: bold;
+      margin-bottom: 30px;
+    }
+
+    .product-info .product-description {
+      color: #ccc;
+      line-height: 1.8;
+      margin-bottom: 30px;
+      font-size: 1.1rem;
+    }
+
+    .add-to-cart-btn {
+      display: inline-block;
+      padding: 15px 40px;
+      background-color: #ff6a00;
+      color: #000;
+      font-weight: bold;
+      font-size: 1.2rem;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .add-to-cart-btn:hover {
+      background-color: #ff8a33;
+      transform: scale(1.05);
+    }
+
+    @media (max-width: 768px) {
+      .detail-container {
+        grid-template-columns: 1fr;
+        gap: 30px;
+      }
+
+      #catalog h1 {
+        font-size: 2rem;
+      }
+
+      .product-info h2 {
+        font-size: 2rem;
+      }
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav>
+    <a href="index.html" class="logo">Forge</a>
+    <div class="menu-toggle" onclick="toggleMenu()">☰</div>
+    <div class="nav-links" id="navLinks">
+      <a href="shop.html">Pre-Built Keyboards</a>
+      <a href="builder.html">Custom Keyboards</a>
+      <a href="about.html">About</a>
+      <a href="faqs.html">FAQs</a>
+      <a href="login.html">Login / Sign-Up</a>
+      <a href="cart.html">Cart</a>
+    </div>
+  </nav>
+
+  <!-- Catalog Section -->
+  <section id="catalog">
+    <h1>Pre-Built Keyboards</h1>
+    <div class="keyboard-grid">
+      <!-- Keyboard 1 -->
+      <div class="keyboard-card" onclick="showProduct(1)">
+        <img src="images/keyboard1.jpg" alt="Tactile Pro">
+        <div class="keyboard-info">
+          <h3>Tactile Pro</h3>
+          <p class="price">$149.99</p>
+          <p class="short-desc">Premium tactile switches with RGB lighting</p>
+        </div>
+      </div>
+
+      <!-- Keyboard 2 -->
+      <div class="keyboard-card" onclick="showProduct(2)">
+        <img src="images/keyboard2.jpg" alt="Silent Storm">
+        <div class="keyboard-info">
+          <h3>Silent Storm</h3>
+          <p class="price">$179.99</p>
+          <p class="short-desc">Ultra-quiet linear switches for office use</p>
+        </div>
+      </div>
+
+      <!-- Keyboard 3 -->
+      <div class="keyboard-card" onclick="showProduct(3)">
+        <img src="images/keyboard3.jpg" alt="Clicky Classic">
+        <div class="keyboard-info">
+          <h3>Clicky Classic</h3>
+          <p class="price">$129.99</p>
+          <p class="short-desc">Authentic clicky switches with vintage design</p>
+        </div>
+      </div>
+
+      <!-- Keyboard 4 -->
+      <div class="keyboard-card" onclick="showProduct(4)">
+        <img src="images/keyboard4.jpg" alt="RGB Elite">
+        <div class="keyboard-info">
+          <h3>RGB Elite</h3>
+          <p class="price">$199.99</p>
+          <p class="short-desc">Full RGB per-key lighting with gaming switches</p>
+        </div>
+      </div>
+
+      <!-- Keyboard 5 -->
+      <div class="keyboard-card" onclick="showProduct(5)">
+        <img src="images/keyboard5.jpg" alt="Compact 60">
+        <div class="keyboard-info">
+          <h3>Compact 60</h3>
+          <p class="price">$139.99</p>
+          <p class="short-desc">60% layout for minimalist setup</p>
+        </div>
+      </div>
+
+      <!-- Keyboard 6 -->
+      <div class="keyboard-card" onclick="showProduct(6)">
+        <img src="images/keyboard6.jpg" alt="TKL Master">
+        <div class="keyboard-info">
+          <h3>TKL Master</h3>
+          <p class="price">$169.99</p>
+          <p class="short-desc">Tenkeyless design with premium switches</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Product Detail Section -->
+  <section id="product-detail">
+    <a href="#" class="back-btn" onclick="showCatalog()">← Back to Catalog</a>
+    <div class="detail-container">
+      <div>
+        <img id="detail-image" src="" alt="" class="product-image">
+      </div>
+      <div class="product-info">
+        <h2 id="detail-name"></h2>
+        <p class="product-price" id="detail-price"></p>
+        <p class="product-description" id="detail-description"></p>
+        <button class="add-to-cart-btn" onclick="addToCart()">Add to Cart</button>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    function toggleMenu() {
+      const nav = document.getElementById('navLinks');
+      nav.classList.toggle('mobile-active');
+    }
+
+    // Keyboard data
+    const keyboards = {
+      1: {
+        name: "Tactile Pro",
+        price: "$149.99",
+        image: "images/keyboard1.jpg",
+        description: "The Tactile Pro features premium tactile switches that provide satisfying feedback with every keystroke. Equipped with customizable RGB lighting, this keyboard is perfect for both work and gaming. The durable aluminum frame ensures longevity, while the hot-swappable switches allow for easy customization. Includes a detachable USB-C cable and comes with PBT keycaps for enhanced durability."
+      },
+      2: {
+        name: "Silent Storm",
+        price: "$179.99",
+        image: "images/keyboard2.jpg",
+        description: "Designed for quiet environments, the Silent Storm uses ultra-quiet linear switches that are virtually silent. Perfect for office use or late-night gaming sessions. Features sound-dampening foam, premium PBT keycaps, and a sleek minimalist design. The keyboard includes dedicated media controls and a premium wrist rest for maximum comfort during extended typing sessions."
+      },
+      3: {
+        name: "Clicky Classic",
+        price: "$129.99",
+        image: "images/keyboard3.jpg",
+        description: "Experience the nostalgic feel of classic mechanical keyboards with the Clicky Classic. Featuring authentic clicky switches that provide both tactile and audible feedback, this keyboard is built with a vintage-inspired design. The steel backplate ensures durability, while the retro keycaps add a touch of classic style. Perfect for typing enthusiasts who love that satisfying click."
+      },
+      4: {
+        name: "RGB Elite",
+        price: "$199.99",
+        image: "images/keyboard4.jpg",
+        description: "The RGB Elite is the ultimate gaming keyboard, featuring per-key RGB lighting with millions of color combinations. Powered by high-performance gaming switches with fast actuation, this keyboard is designed for competitive gaming. Includes programmable macros, dedicated media controls, and customizable lighting profiles. The aircraft-grade aluminum frame ensures durability during intense gaming sessions."
+      },
+      5: {
+        name: "Compact 60",
+        price: "$139.99",
+        image: "images/keyboard5.jpg",
+        description: "Maximize your desk space with the Compact 60, a 60% layout keyboard that doesn't compromise on functionality. Despite its compact size, it features all essential keys accessible through intuitive layers. Built with premium switches and a high-quality aluminum case, this keyboard is perfect for minimalist setups. Includes RGB underglow lighting and comes in multiple color options."
+      },
+      6: {
+        name: "TKL Master",
+        price: "$169.99",
+        image: "images/keyboard6.jpg",
+        description: "The TKL Master offers the perfect balance between functionality and space-saving design. This tenkeyless keyboard removes the numpad to give you more mouse space while retaining all essential keys. Features premium tactile switches, customizable RGB backlighting, and a solid aluminum chassis. Includes a braided USB cable, PBT keycaps, and full programmability for advanced users."
+      }
+    };
+
+    function showProduct(id) {
+      const product = keyboards[id];
+      currentProduct = product; // Store current product for cart
+      document.getElementById('detail-name').textContent = product.name;
+      document.getElementById('detail-price').textContent = product.price;
+      document.getElementById('detail-image').src = product.image;
+      document.getElementById('detail-image').alt = product.name;
+      document.getElementById('detail-description').textContent = product.description;
+      
+      document.getElementById('catalog').style.display = 'none';
+      document.getElementById('product-detail').style.display = 'block';
+      window.scrollTo(0, 0);
+    }
+
+    function showCatalog() {
+      document.getElementById('catalog').style.display = 'block';
+      document.getElementById('product-detail').style.display = 'none';
+      window.scrollTo(0, 0);
+    }
+
+    let currentProduct = null;
+
+    function addToCart() {
+      if (!currentProduct) return;
+      
+      // Get existing cart from localStorage or create new array
+      let cart = JSON.parse(localStorage.getItem('cart')) || [];
+      
+      // Check if product already exists in cart
+      const existingIndex = cart.findIndex(item => item.name === currentProduct.name);
+      
+      if (existingIndex !== -1) {
+        // Increase quantity if product exists
+        cart[existingIndex].quantity += 1;
+      } else {
+        // Add new product with quantity 1
+        cart.push({
+          ...currentProduct,
+          quantity: 1
+        });
+      }
+      
+      // Save updated cart to localStorage
+      localStorage.setItem('cart', JSON.stringify(cart));
+      
+      alert('Product added to cart!');
+    }
+  </script>
+
+</body>
+</html>

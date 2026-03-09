@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard - Forge</title>
+  <style>
+    * { box-sizing:border-box; margin:0; padding:0; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background:#0a0a0a; color:#fff; }
+    nav { background:#111; padding:15px 30px; display:flex; justify-content:space-between; align-items:center; }
+    .logo { color:#ff6a00; text-decoration:none; font-size:1.6rem; font-weight:700; letter-spacing:2px; }
+    .nav-links button { color:#fff; background:#222; border:none; padding:8px 12px; border-radius:8px; cursor:pointer; }
+    .wrap { max-width:1200px; margin:24px auto; padding:0 20px; }
+    h1 { color:#ff6a00; margin-bottom:14px; }
+    .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px; margin-bottom:20px; }
+    .stat { background:#1e1e1e; border:1px solid #2f2f2f; border-radius:12px; padding:14px; }
+    .stat .k { color:#a8a8a8; font-size:0.9rem; }
+    .stat .v { font-size:1.6rem; font-weight:700; margin-top:4px; }
+    .panel { background:#1e1e1e; border:1px solid #2f2f2f; border-radius:12px; padding:16px; margin-bottom:16px; }
+    table { width:100%; border-collapse:collapse; }
+    th, td { text-align:left; border-bottom:1px solid #333; padding:10px 6px; vertical-align:top; }
+    select, input, textarea { width:100%; background:#121212; color:#fff; border:1px solid #333; border-radius:8px; padding:8px; }
+    button.primary { background:#ff6a00; color:#000; border:none; border-radius:8px; padding:8px 12px; cursor:pointer; font-weight:700; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:10px; }
+    .small { color:#bcbcbc; font-size:0.9rem; }
+  </style>
+</head>
+<body>
+  <nav>
+    <a class="logo" href="index.html">Forge Admin</a>
+    <div class="nav-links">
+      <button onclick="logout()">Logout</button>
+    </div>
+  </nav>
+
+  <div class="wrap">
+    <h1>Admin Dashboard</h1>
+
+    <div class="stats">
+      <div class="stat"><div class="k">Orders In Progress</div><div id="inProgress" class="v">0</div></div>
+      <div class="stat"><div class="k">Total Orders</div><div id="totalOrders" class="v">0</div></div>
+      <div class="stat"><div class="k">New Order Alerts</div><div id="alertsCount" class="v">0</div></div>
+    </div>
+
+    <div class="panel">
+      <h2>Order Alerts</h2>
+      <p class="small">Email notification can be enabled by integrating an email API in the checkout flow. Alerts below are generated in-app.</p>
+      <div id="alerts"></div>
+    </div>
+
+    <div class="panel">
+      <h2>Orders</h2>
+      <div id="orders"></div>
+    </div>
+
+    <div class="panel">
+      <h2>Manage Pre-Built Keyboards</h2>
+      <form id="catalogForm" class="grid">
+        <input id="pid" placeholder="id (e.g. kb-001)" required />
+        <input id="pname" placeholder="name" required />
+        <input id="pprice" placeholder="price, e.g. $149.99" required />
+        <input id="pimage" placeholder="image path, e.g. images/keyboard1.jpg" required />
+        <input id="pshort" placeholder="short description" required />
+        <textarea id="pdesc" placeholder="full description" required></textarea>
+        <button class="primary" type="submit">Add / Replace Product</button>
+      </form>
+      <br/>
+      <div id="catalogList"></div>
+    </div>
+
+    <div class="panel">
+      <h2>Manage Admin Accounts</h2>
+      <form id="adminForm" class="grid">
+        <input id="adminFirstName" placeholder="first name" required />
+        <input id="adminLastName" placeholder="last name" required />
+        <input id="adminNewEmail" type="email" placeholder="admin email" required />
+        <input id="adminNewPassword" type="password" placeholder="temporary password" required />
+        <button class="primary" type="submit">Add Admin</button>
+      </form>
+      <p id="adminMsg" class="small" style="margin-top:8px;"></p>
+      <br/>
+      <div id="adminList"></div>
+    </div>
+  </div>
+
+  <script>
+    function getSession(){ return JSON.parse(sessionStorage.getItem('sessionUser') || localStorage.getItem('sessionUser') || 'null'); }
+    function logout(){ sessionStorage.removeItem('sessionUser'); localStorage.removeItem('sessionUser'); window.location.href='admin.html'; }
+    const session = getSession();
+    if (!session || session.role !== 'admin') window.location.href = 'admin.html';
+
+    const defaultCatalog = [
+      { id:'kb-001', name:'Tactile Pro', price:'$149.99', image:'images/keyboard1.jpg', shortDesc:'Premium tactile switches with RGB lighting', description:'Premium tactile switch board for work and play.' },
+      { id:'kb-002', name:'Silent Storm', price:'$179.99', image:'images/keyboard2.jpg', shortDesc:'Ultra-quiet linear switches for office use', description:'Silent linear board for focused sessions.' },
+      { id:'kb-003', name:'Clicky Classic', price:'$129.99', image:'images/keyboard3.jpg', shortDesc:'Authentic clicky switches with vintage design', description:'Clicky classic with old-school feedback.' },
+      { id:'kb-004', name:'RGB Elite', price:'$199.99', image:'images/keyboard4.jpg', shortDesc:'Full RGB per-key lighting with gaming switches', description:'High-performance RGB gaming board.' },
+      { id:'kb-005', name:'Compact 60', price:'$139.99', image:'images/keyboard5.jpg', shortDesc:'60% layout for minimalist setup', description:'Space-saving 60% layout with premium feel.' },
+      { id:'kb-006', name:'TKL Master', price:'$169.99', image:'images/keyboard6.jpg', shortDesc:'Tenkeyless design with premium switches', description:'TKL setup with great balance of size and utility.' }
+    ];
+
+    function getCatalog(){
+      const existing = JSON.parse(localStorage.getItem('prebuiltCatalog') || 'null');
+      if (!existing) {
+        localStorage.setItem('prebuiltCatalog', JSON.stringify(defaultCatalog));
+        return defaultCatalog;
+      }
+      return existing;
+    }
+
+    function setCatalog(list){ localStorage.setItem('prebuiltCatalog', JSON.stringify(list)); }
+    function getUsers(){ return JSON.parse(localStorage.getItem('users') || '[]'); }
+    function setUsers(users){ localStorage.setItem('users', JSON.stringify(users)); }
+
+    function renderOrders(){
+      const allOrders = JSON.parse(localStorage.getItem('ordersAll') || '[]');
+      const alerts = JSON.parse(localStorage.getItem('adminNotifications') || '[]');
+
+      totalOrders.textContent = String(allOrders.length);
+      inProgress.textContent = String(allOrders.filter(o => ['Processing','Packed','Shipped'].includes(o.status)).length);
+      alertsCount.textContent = String(alerts.length);
+
+      alerts.innerHTML = alerts.length ? alerts.slice().reverse().map(a => `<p>• ${new Date(a.time).toLocaleString()} — ${a.message}</p>`).join('') : '<p class="small">No alerts.</p>';
+
+      if (!allOrders.length) {
+        orders.innerHTML = '<p class="small">No orders yet.</p>';
+        return;
+      }
+
+      orders.innerHTML = `<table>
+        <thead><tr><th>Order #</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th><th>Save</th></tr></thead>
+        <tbody>
+          ${allOrders.map((o, idx) => `
+            <tr>
+              <td>${o.orderNumber}</td>
+              <td>${o.userEmail}</td>
+              <td>${o.items.map(i => `${i.quantity}× ${i.name}`).join('<br/>')}</td>
+              <td>${o.total}</td>
+              <td>
+                <select id="status-${idx}">
+                  ${['Processing','Packed','Shipped','Delivered','Cancelled'].map(s => `<option ${s===o.status?'selected':''}>${s}</option>`).join('')}
+                </select>
+              </td>
+              <td><button class="primary" onclick="saveStatus(${idx})">Update</button></td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>`;
+    }
+
+    function saveStatus(index){
+      const allOrders = JSON.parse(localStorage.getItem('ordersAll') || '[]');
+      const next = document.getElementById(`status-${index}`).value;
+      const order = allOrders[index];
+      if (!order) return;
+      order.status = next;
+      allOrders[index] = order;
+      localStorage.setItem('ordersAll', JSON.stringify(allOrders));
+
+      const byUser = JSON.parse(localStorage.getItem('purchaseHistoryByUser') || '{}');
+      const list = byUser[order.userEmail] || [];
+      const found = list.find(x => x.orderNumber === order.orderNumber);
+      if (found) found.status = next;
+      byUser[order.userEmail] = list;
+      localStorage.setItem('purchaseHistoryByUser', JSON.stringify(byUser));
+
+      renderOrders();
+    }
+
+    function renderCatalog(){
+      const list = getCatalog();
+      catalogList.innerHTML = list.map((p, i) => `
+        <div style="border-top:1px solid #333; padding:8px 0; display:flex; justify-content:space-between; gap:8px;">
+          <div>
+            <strong>${p.name}</strong> (${p.price})<br/><span class="small">${p.id} • ${p.shortDesc}</span>
+          </div>
+          <button class="primary" onclick="removeProduct(${i})">Remove</button>
+        </div>
+      `).join('');
+    }
+
+    function removeProduct(index){
+      const list = getCatalog();
+      list.splice(index, 1);
+      setCatalog(list);
+      renderCatalog();
+    }
+
+    function renderAdmins() {
+      const users = getUsers();
+      const admins = users.filter(u => u.role === 'admin');
+      adminList.innerHTML = admins.map((a) => `
+        <div style="border-top:1px solid #333; padding:8px 0; display:flex; justify-content:space-between; gap:8px;">
+          <div>
+            <strong>${a.firstName || ''} ${a.lastName || ''}</strong><br/><span class="small">${a.email}</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    catalogForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const product = {
+        id: pid.value.trim(),
+        name: pname.value.trim(),
+        price: pprice.value.trim(),
+        image: pimage.value.trim(),
+        shortDesc: pshort.value.trim(),
+        description: pdesc.value.trim()
+      };
+      const list = getCatalog();
+      const idx = list.findIndex(p => p.id === product.id);
+      if (idx >= 0) list[idx] = product; else list.push(product);
+      setCatalog(list);
+      catalogForm.reset();
+      renderCatalog();
+    });
+
+    adminForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      adminMsg.textContent = '';
+
+      const users = getUsers();
+      const email = adminNewEmail.value.trim().toLowerCase();
+      if (users.some(u => u.email === email)) {
+        adminMsg.textContent = 'That email is already used by another account.';
+        return;
+      }
+
+      users.push({
+        id: `admin-${Date.now()}`,
+        role: 'admin',
+        firstName: adminFirstName.value.trim(),
+        lastName: adminLastName.value.trim(),
+        email,
+        password: adminNewPassword.value,
+        address: 'HQ'
+      });
+
+      setUsers(users);
+      adminForm.reset();
+      adminMsg.textContent = 'New admin account created.';
+      renderAdmins();
+    });
+
+    renderOrders();
+    renderCatalog();
+    renderAdmins();
+  </script>
+</body>
+</html>

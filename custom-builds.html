@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Custom Builds - Forge</title>
+  <style>
+    * { box-sizing:border-box; margin:0; padding:0; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background:#0a0a0a; color:#fff; }
+    nav { background:#111; padding:15px 30px; display:flex; justify-content:space-between; align-items:center; }
+    .logo { color:#ff6a00; text-decoration:none; font-size:1.6rem; font-weight:700; letter-spacing:2px; }
+    .nav-links { display:flex; gap:12px; flex-wrap:wrap; }
+    .nav-links a, .nav-links button { color:#fff; text-decoration:none; background:#222; border:none; padding:8px 12px; border-radius:8px; cursor:pointer; }
+    .nav-links a.active { background:#ff6a00; color:#000; font-weight:700; }
+    .wrap { max-width:1000px; margin:30px auto; padding:0 20px; }
+    h1 { color:#ff6a00; margin-bottom:20px; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px; }
+    .card { background:#1e1e1e; border:1px solid #2f2f2f; border-radius:12px; padding:16px; }
+    .card h3 { color:#ff6a00; margin-bottom:8px; }
+    .line { color:#d0d0d0; margin:4px 0; }
+    .actions { margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap; }
+    .btn { border: none; border-radius: 8px; padding: 8px 10px; cursor: pointer; font-weight: 700; }
+    .btn-modify { background: #333; color: #fff; }
+    .btn-delete { background: #d32f2f; color: #fff; }
+    .btn-cart { background: #ff6a00; color: #000; }
+  </style>
+</head>
+<body>
+  <nav>
+    <a class="logo" href="index.html">Forge</a>
+    <div class="nav-links">
+      <a class="active" href="custom-builds.html">Custom Builds</a>
+      <a href="purchases.html">Purchases</a>
+      <a href="account.html">Account</a>
+      <a href="billing.html">Billing</a>
+      <button onclick="logout()">Logout</button>
+      <a href="cart.html">Cart</a>
+    </div>
+  </nav>
+
+  <div class="wrap">
+    <h1>Saved Custom Builds</h1>
+    <div id="list" class="grid"></div>
+  </div>
+
+  <script>
+    function getSession(){ return JSON.parse(sessionStorage.getItem('sessionUser') || localStorage.getItem('sessionUser') || 'null'); }
+    function logout(){ sessionStorage.removeItem('sessionUser'); localStorage.removeItem('sessionUser'); window.location.href='login.html'; }
+    const session = getSession();
+    if (!session) window.location.href = 'login.html';
+    if (session && session.role === 'admin') window.location.href = 'admin-dashboard.html';
+
+    const all = JSON.parse(localStorage.getItem('customBuildsByUser') || '{}');
+    const builds = (session && all[session.email]) || [];
+    const list = document.getElementById('list');
+
+    if (!builds.length) {
+      list.innerHTML = '<div class="card">No saved builds yet. Build one in <a href="builder.html" style="color:#ff6a00;">Custom Keyboards</a>.</div>';
+    } else {
+      list.innerHTML = builds.map((b, idx) => `
+        <div class="card">
+          <h3>${b.name || 'Custom Keyboard'}</h3>
+          <p class="line"><strong>Price:</strong> ${b.price}</p>
+          <p class="line"><strong>Usage:</strong> ${b.usage}</p>
+          <p class="line"><strong>Sound:</strong> ${b.sound}</p>
+          <p class="line"><strong>Feel:</strong> ${b.feel}</p>
+          <p class="line"><strong>Size:</strong> ${b.size}</p>
+          <p class="line"><strong>Style:</strong> ${b.style}</p>
+          <p class="line"><small>Saved: ${new Date(b.savedAt).toLocaleString()}</small></p>
+          <div class="actions">
+            <button class="btn btn-modify" onclick="modifyBuild(${idx})">Modify</button>
+            <button class="btn btn-delete" onclick="deleteBuild(${idx})">Delete</button>
+            <button class="btn btn-cart" onclick="addBuildToCart(${idx})">Add to Cart</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function modifyBuild(index) {
+      const target = builds[index];
+      if (!target) return;
+      localStorage.setItem('pendingBuildEdit', JSON.stringify(target));
+      window.location.href = 'build.html';
+    }
+
+    function addBuildToCart(index) {
+      const target = builds[index];
+      if (!target) return;
+
+      const userCarts = JSON.parse(localStorage.getItem('userCarts') || '{}');
+      if (!userCarts[session.email]) userCarts[session.email] = [];
+      userCarts[session.email].push({
+        name: target.name || 'Custom Keyboard',
+        price: target.price || '$199.99',
+        image: 'images/custom-keyboard.jpg',
+        description: `Custom built: ${target.usage || 'N/A'} | ${target.sound || 'N/A'} | ${target.feel || 'N/A'} | ${target.size || 'N/A'} | ${target.style || 'N/A'}`,
+        quantity: 1
+      });
+      localStorage.setItem('userCarts', JSON.stringify(userCarts));
+      alert('Saved custom build added to cart.');
+    }
+
+    function deleteBuild(index) {
+      const target = builds[index];
+      if (!target) return;
+      if (!confirm('Delete this saved build?')) return;
+
+      const allBuilds = JSON.parse(localStorage.getItem('customBuildsByUser') || '{}');
+      const userBuilds = allBuilds[session.email] || [];
+      userBuilds.splice(index, 1);
+      allBuilds[session.email] = userBuilds;
+      localStorage.setItem('customBuildsByUser', JSON.stringify(allBuilds));
+      window.location.reload();
+    }
+  </script>
+</body>
+</html>

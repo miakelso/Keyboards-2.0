@@ -94,6 +94,7 @@
       font-weight: bold;
       color: #ff6a00;
       text-shadow: 2px 2px #000;
+      background-color: #1e1e1e;
     }
 
     .hero img {
@@ -106,15 +107,17 @@
     /* Sections for pre-built & custom */
     .section-container {
       display: flex;
-      flex-direction: column;
+      flex-direction: row;
       gap: 50px;
       padding: 50px 20px;
       align-items: center;
+      justify-content: center;
+      background-color: #1e1e1e;
     }
 
     .card {
-      width: 90%;
-      max-width: 1000px;
+      width: 45%;
+      max-width: 500px;
       height: 400px;
       background-size: cover;
       background-position: center;
@@ -175,11 +178,41 @@
       background-color: #ff8a33;
     }
 
+    /* Bottom Link Bar */
+    .bottom-bar {
+      width: 100%;
+      background-color: #111;
+      border-top: 1px solid #2a2a2a;
+      padding: 18px 20px;
+      display: flex;
+      justify-content: center;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    .bottom-bar a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: 500;
+      padding: 8px 12px;
+      border-radius: 6px;
+      transition: 0.3s;
+    }
+
+    .bottom-bar a:hover {
+      background-color: #ff6a00;
+      color: #000;
+    }
+
     @media (max-width: 768px) {
       .hero {
         font-size: 4rem;
       }
+      .section-container {
+        flex-direction: column;
+      }
       .card {
+        width: 90%;
         height: 300px;
       }
       .card-content h2 {
@@ -207,7 +240,7 @@
 
   <!-- Hero / Logo Section -->
   <div class="hero">
-    <img src="logo2.png" alt="Forge Logo">
+    <img src="logo3.jpg" alt="Forge Logo">
   </div>
 
   <!-- Two main sections -->
@@ -223,10 +256,20 @@
     <div class="card" style="background-image: url('images/custom.jpg');">
       <div class="card-overlay"></div>
       <div class="card-content">
-        <h2>Create Custom Keyboard</h2>
+        <h2>Create Custom Keyboards</h2>
         <a href="builder.html">Build Now</a>
       </div>
     </div>
+  </div>
+
+  <!-- Bottom Link Bar -->
+  <div class="bottom-bar">
+    <a href="index.html">Home</a>
+    <a href="login.html">Login/Sign-Up</a>
+    <a href="about.html">About</a>
+    <a href="faqs.html">FAQs</a>
+    <a href="mailto:support@forge.com">Contact Us</a>
+    <a href="admin.html">Admin</a>
   </div>
 
   <script>

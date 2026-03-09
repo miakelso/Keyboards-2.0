@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Login / Sign-Up - Forge</title>
+	<style>
+		* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+		body { background: #0a0a0a; color: #fff; min-height: 100vh; }
+		nav { width: 100%; background: #111; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+		.logo { color: #ff6a00; text-decoration: none; font-size: 1.8rem; font-weight: 700; letter-spacing: 2px; }
+		.shell { max-width: 980px; margin: 40px auto; padding: 0 20px; }
+		.auth {
+			background: linear-gradient(180deg, #1a1a1a, #151515);
+			border: 1px solid #2c2c2c;
+			border-radius: 16px;
+			display: grid;
+			grid-template-columns: 1fr 1.2fr;
+			overflow: hidden;
+		}
+		.hero { background: radial-gradient(circle at 20% 20%, #2a2a2a, #141414); padding: 28px; }
+		.hero h1 { color: #ff6a00; margin-bottom: 10px; }
+		.hero p { color: #cfcfcf; line-height: 1.5; }
+		.panel { padding: 28px; }
+		.tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+		.tabs button {
+			background: #272727;
+			border: 1px solid #3a3a3a;
+			color: #fff;
+			padding: 10px 14px;
+			border-radius: 10px;
+			cursor: pointer;
+			font-weight: 600;
+		}
+		.tabs button.active { background: #ff6a00; color: #000; border-color: #ff6a00; }
+		form { display: none; }
+		form.active { display: block; }
+		.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+		.full { grid-column: span 2; }
+		label { font-size: 0.9rem; color: #bdbdbd; }
+		input {
+			width: 100%;
+			margin-top: 6px;
+			background: #101010;
+			border: 1px solid #2f2f2f;
+			color: #fff;
+			padding: 10px;
+			border-radius: 10px;
+		}
+		.submit {
+			margin-top: 14px;
+			width: 100%;
+			background: #ff6a00;
+			color: #000;
+			border: none;
+			border-radius: 10px;
+			padding: 11px;
+			font-weight: 700;
+			cursor: pointer;
+		}
+		.hint { margin-top: 10px; color: #a8a8a8; font-size: 0.9rem; }
+		.msg { margin-top: 10px; color: #ffb77a; }
+		@media (max-width: 900px) {
+			.auth { grid-template-columns: 1fr; }
+			.grid { grid-template-columns: 1fr; }
+			.full { grid-column: span 1; }
+		}
+	</style>
+</head>
+<body>
+	<nav>
+		<a href="index.html" class="logo">Forge</a>
+	</nav>
+
+	<div class="shell">
+		<div class="auth">
+			<div class="hero">
+				<h1>Welcome to Forge</h1>
+				<p>Log in to manage builds, purchases, account and billing. Sign up to create a new account and get a confirmation email.</p>
+				<p class="hint" style="margin-top:16px;">Admin accounts sign in from the Admin page.</p>
+			</div>
+
+			<div class="panel">
+				<div class="tabs">
+					<button id="tabLogin" class="active" onclick="showTab('login')">Login</button>
+					<button id="tabSignup" onclick="showTab('signup')">Sign-Up</button>
+				</div>
+
+				<form id="loginForm" class="active">
+					<div class="grid">
+						<div class="full">
+							<label>Email
+								<input id="loginEmail" type="email" required />
+							</label>
+						</div>
+						<div class="full">
+							<label>Password
+								<input id="loginPassword" type="password" required />
+							</label>
+						</div>
+					</div>
+					<button type="submit" class="submit">Login</button>
+				</form>
+
+				<form id="signupForm">
+					<div class="grid">
+						<div>
+							<label>First Name
+								<input id="firstName" required />
+							</label>
+						</div>
+						<div>
+							<label>Last Name
+								<input id="lastName" required />
+							</label>
+						</div>
+						<div class="full">
+							<label>Address 1
+								<input id="address1" required />
+							</label>
+						</div>
+						<div class="full">
+							<label>Address 2
+								<input id="address2" />
+							</label>
+						</div>
+						<div>
+							<label>City
+								<input id="city" required />
+							</label>
+						</div>
+						<div>
+							<label>State / Province
+								<input id="stateProvince" required />
+							</label>
+						</div>
+						<div>
+							<label>Zip / Postal Code
+								<input id="zipPostalCode" required />
+							</label>
+						</div>
+						<div>
+							<label>Country
+								<input id="country" required />
+							</label>
+						</div>
+						<div class="full">
+							<label>Email
+								<input id="signupEmail" type="email" required />
+							</label>
+						</div>
+						<div class="full">
+							<label>Password
+								<input id="signupPassword" type="password" required />
+							</label>
+						</div>
+					</div>
+					<button type="submit" class="submit">Create Account</button>
+				</form>
+				<p id="msg" class="msg"></p>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		function showTab(tab) {
+			const loginForm = document.getElementById('loginForm');
+			const signupForm = document.getElementById('signupForm');
+			const tabLogin = document.getElementById('tabLogin');
+			const tabSignup = document.getElementById('tabSignup');
+			if (tab === 'login') {
+				loginForm.classList.add('active');
+				signupForm.classList.remove('active');
+				tabLogin.classList.add('active');
+				tabSignup.classList.remove('active');
+			} else {
+				signupForm.classList.add('active');
+				loginForm.classList.remove('active');
+				tabSignup.classList.add('active');
+				tabLogin.classList.remove('active');
+			}
+		}
+
+		function getUsers() { return JSON.parse(localStorage.getItem('users') || '[]'); }
+		function setUsers(users) { localStorage.setItem('users', JSON.stringify(users)); }
+		function getActiveSession() {
+			return JSON.parse(sessionStorage.getItem('sessionUser') || localStorage.getItem('sessionUser') || 'null');
+		}
+
+		async function sendSignupConfirmationEmail(user) {
+			const subject = encodeURIComponent('Welcome to Forge — Account Created');
+			const body = encodeURIComponent(`Hi ${user.firstName},\n\nYour Forge account was created successfully for ${user.email}.\n\n- Forge Team`);
+			window.location.href = `mailto:${user.email}?subject=${subject}&body=${body}`;
+		}
+
+		function processPendingCustomBuild(user) {
+			if (!user || user.role !== 'user') return false;
+			const pendingRaw = localStorage.getItem('pendingCustomBuild');
+			if (!pendingRaw) return false;
+
+			try {
+				const pendingBuild = JSON.parse(pendingRaw);
+				if (!pendingBuild || !pendingBuild.name) return false;
+
+				const buildsByUser = JSON.parse(localStorage.getItem('customBuildsByUser') || '{}');
+				if (!buildsByUser[user.email]) buildsByUser[user.email] = [];
+				buildsByUser[user.email].push({
+					...pendingBuild,
+					savedAt: pendingBuild.savedAt || new Date().toISOString()
+				});
+				localStorage.setItem('customBuildsByUser', JSON.stringify(buildsByUser));
+				localStorage.removeItem('pendingCustomBuild');
+				return true;
+			} catch (error) {
+				localStorage.removeItem('pendingCustomBuild');
+				return false;
+			}
+		}
+
+		// If already logged in, skip auth form and send user to their dashboard.
+		const activeSession = getActiveSession();
+		if (activeSession) {
+			if (activeSession.role === 'admin') {
+				window.location.href = 'admin-dashboard.html';
+			} else {
+				window.location.href = 'custom-builds.html';
+			}
+		}
+
+		document.getElementById('signupForm').addEventListener('submit', async (e) => {
+			e.preventDefault();
+			const msg = document.getElementById('msg');
+			msg.textContent = '';
+
+			const users = getUsers();
+			const email = signupEmail.value.trim().toLowerCase();
+			if (users.some(u => u.email === email)) {
+				msg.textContent = 'An account with that email already exists.';
+				return;
+			}
+
+			const address = {
+				address1: address1.value.trim(),
+				address2: address2.value.trim(),
+				city: city.value.trim(),
+				stateProvince: stateProvince.value.trim(),
+				zipPostalCode: zipPostalCode.value.trim(),
+				country: country.value.trim()
+			};
+
+			const fullAddress = `${address.address1}${address.address2 ? `, ${address.address2}` : ''}, ${address.city}, ${address.stateProvince}, ${address.zipPostalCode}, ${address.country}`;
+
+			const user = {
+				id: `u-${Date.now()}`,
+				role: 'user',
+				firstName: firstName.value.trim(),
+				lastName: lastName.value.trim(),
+				email,
+				password: signupPassword.value,
+				address: fullAddress,
+				addressDetails: address,
+				addressLine1: address.address1,
+				addressLine2: address.address2,
+				city: address.city,
+				stateProvince: address.stateProvince,
+				zipPostalCode: address.zipPostalCode,
+				country: address.country,
+				addressText: fullAddress,
+				addressLegacy: fullAddress
+			};
+			users.push(user);
+			setUsers(users);
+
+			await sendSignupConfirmationEmail(user);
+			msg.textContent = 'Account created. A confirmation email draft was opened for the provided email.';
+			showTab('login');
+			loginEmail.value = user.email;
+		});
+
+		document.getElementById('loginForm').addEventListener('submit', (e) => {
+			e.preventDefault();
+			const msg = document.getElementById('msg');
+			msg.textContent = '';
+
+			const email = loginEmail.value.trim().toLowerCase();
+			const password = loginPassword.value;
+			const user = getUsers().find(u => u.email === email && u.password === password);
+
+			if (!user) {
+				msg.textContent = 'Invalid email or password.';
+				return;
+			}
+
+			if (user.role === 'admin') {
+				msg.textContent = 'Admin accounts must sign in on the Admin page.';
+				return;
+			}
+
+			sessionStorage.setItem('sessionUser', JSON.stringify({
+				id: user.id,
+				role: user.role,
+				email: user.email,
+				firstName: user.firstName,
+				lastName: user.lastName
+			}));
+			localStorage.removeItem('sessionUser');
+
+			processPendingCustomBuild(user);
+
+			window.location.href = 'custom-builds.html';
+		});
+	</script>
+</body>
+</html>

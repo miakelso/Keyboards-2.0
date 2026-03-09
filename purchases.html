@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Purchases - Forge</title>
+  <style>
+    * { box-sizing:border-box; margin:0; padding:0; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background:#0a0a0a; color:#fff; }
+    nav { background:#111; padding:15px 30px; display:flex; justify-content:space-between; align-items:center; }
+    .logo { color:#ff6a00; text-decoration:none; font-size:1.6rem; font-weight:700; letter-spacing:2px; }
+    .nav-links { display:flex; gap:12px; flex-wrap:wrap; }
+    .nav-links a, .nav-links button { color:#fff; text-decoration:none; background:#222; border:none; padding:8px 12px; border-radius:8px; cursor:pointer; }
+    .nav-links a.active { background:#ff6a00; color:#000; font-weight:700; }
+    .wrap { max-width:1000px; margin:30px auto; padding:0 20px; }
+    h1 { color:#ff6a00; margin-bottom:20px; }
+    .order { background:#1e1e1e; border:1px solid #2f2f2f; border-radius:12px; padding:16px; margin-bottom:16px; }
+    .top { display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-bottom:10px; }
+    .badge { background:#2a2a2a; color:#ff6a00; border:1px solid #444; padding:5px 8px; border-radius:8px; }
+    ul { padding-left:18px; color:#d0d0d0; }
+    pre { margin-top:10px; background:#121212; border:1px solid #2f2f2f; padding:10px; border-radius:8px; overflow:auto; }
+  </style>
+</head>
+<body>
+  <nav>
+    <a class="logo" href="index.html">Forge</a>
+    <div class="nav-links">
+      <a href="custom-builds.html">Custom Builds</a>
+      <a class="active" href="purchases.html">Purchases</a>
+      <a href="account.html">Account</a>
+      <a href="billing.html">Billing</a>
+      <button onclick="logout()">Logout</button>
+      <a href="cart.html">Cart</a>
+    </div>
+  </nav>
+
+  <div class="wrap">
+    <h1>Purchase History</h1>
+    <div id="orders"></div>
+  </div>
+
+  <script>
+    function getSession(){ return JSON.parse(sessionStorage.getItem('sessionUser') || localStorage.getItem('sessionUser') || 'null'); }
+    function logout(){ sessionStorage.removeItem('sessionUser'); localStorage.removeItem('sessionUser'); window.location.href='login.html'; }
+    const session = getSession();
+    if (!session) window.location.href = 'login.html';
+    if (session && session.role === 'admin') window.location.href = 'admin-dashboard.html';
+
+    const byUser = JSON.parse(localStorage.getItem('purchaseHistoryByUser') || '{}');
+    const orders = (session && byUser[session.email]) || [];
+    const el = document.getElementById('orders');
+
+    if (!orders.length) {
+      el.innerHTML = '<div class="order">No purchases yet.</div>';
+    } else {
+      el.innerHTML = orders.slice().reverse().map((o) => `
+        <div class="order">
+          <div class="top">
+            <div><strong>Order #${o.orderNumber}</strong> • ${new Date(o.placedAt).toLocaleString()}</div>
+            <div class="badge">${o.status}</div>
+          </div>
+          <ul>
+            ${o.items.map(i => `<li>${i.quantity} × ${i.name} (${i.price})</li>`).join('')}
+          </ul>
+          <pre>${o.receipt}</pre>
+        </div>
+      `).join('');
+    }
+  </script>
+</body>
+</html>

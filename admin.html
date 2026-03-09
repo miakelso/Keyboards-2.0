@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Login - Forge</title>
+  <style>
+    * { box-sizing:border-box; margin:0; padding:0; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background:#0a0a0a; color:#fff; min-height:100vh; }
+    nav { background:#111; padding:15px 30px; display:flex; justify-content:space-between; align-items:center; }
+    .logo { color:#ff6a00; text-decoration:none; font-size:1.6rem; font-weight:700; letter-spacing:2px; }
+    .wrap { max-width:520px; margin:60px auto; padding:0 20px; }
+    .card { background:#1e1e1e; border:1px solid #2f2f2f; border-radius:14px; padding:24px; }
+    h1 { color:#ff6a00; margin-bottom:8px; }
+    p { color:#c8c8c8; margin-bottom:18px; }
+    label { display:block; color:#bdbdbd; font-size:0.9rem; margin-top:12px; }
+    input { width:100%; background:#121212; color:#fff; border:1px solid #333; border-radius:10px; padding:10px; margin-top:6px; }
+    button { width:100%; margin-top:18px; background:#ff6a00; color:#000; border:none; border-radius:10px; padding:11px; font-weight:700; cursor:pointer; }
+    .msg { margin-top:10px; color:#ffb77a; }
+    .hint { margin-top:10px; color:#8f8f8f; font-size:0.9rem; }
+  </style>
+</head>
+<body>
+  <nav>
+    <a class="logo" href="index.html">Forge Admin</a>
+  </nav>
+
+  <div class="wrap">
+    <div class="card">
+      <h1>Admin Login</h1>
+      <p>Sign in with an administrator account to access the admin dashboard.</p>
+
+      <form id="adminLoginForm">
+        <label>Email
+          <input id="adminEmail" type="email" required />
+        </label>
+        <label>Password
+          <input id="adminPassword" type="password" required />
+        </label>
+        <button type="submit">Login as Admin</button>
+      </form>
+      <div id="msg" class="msg"></div>
+      <div class="hint">Default admin demo: admin@forge.com / Admin123!</div>
+    </div>
+  </div>
+
+  <script>
+    function getUsers(){ return JSON.parse(localStorage.getItem('users') || '[]'); }
+    function setUsers(users){ localStorage.setItem('users', JSON.stringify(users)); }
+    function getSession(){ return JSON.parse(sessionStorage.getItem('sessionUser') || localStorage.getItem('sessionUser') || 'null'); }
+
+    function ensureAdmin() {
+      const users = getUsers();
+      if (!users.find(u => u.email === 'admin@forge.com')) {
+        users.push({
+          id: 'admin-1',
+          role: 'admin',
+          firstName: 'Forge',
+          lastName: 'Admin',
+          email: 'admin@forge.com',
+          password: 'Admin123!',
+          address: 'HQ'
+        });
+        setUsers(users);
+      }
+    }
+
+    ensureAdmin();
+
+    const session = getSession();
+    if (session && session.role === 'admin') {
+      window.location.href = 'admin-dashboard.html';
+    }
+
+    document.getElementById('adminLoginForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = adminEmail.value.trim().toLowerCase();
+      const password = adminPassword.value;
+      const admin = getUsers().find(u => u.email === email && u.password === password && u.role === 'admin');
+
+      if (!admin) {
+        msg.textContent = 'Invalid admin credentials.';
+        return;
+      }
+
+      sessionStorage.setItem('sessionUser', JSON.stringify({
+        id: admin.id,
+        role: admin.role,
+        email: admin.email,
+        firstName: admin.firstName,
+        lastName: admin.lastName
+      }));
+      localStorage.removeItem('sessionUser');
+      window.location.href = 'admin-dashboard.html';
+    });
+  </script>
+</body>
+</html>

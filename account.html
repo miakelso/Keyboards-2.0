@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Account - Forge</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background: #0a0a0a; color: #fff; }
+    nav { width: 100%; background: #111; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+    .logo { color: #ff6a00; text-decoration: none; font-size: 1.6rem; font-weight: 700; letter-spacing: 2px; }
+    .nav-links { display: flex; gap: 12px; flex-wrap: wrap; }
+    .nav-links a, .nav-links button { color: #fff; text-decoration: none; background: #222; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; }
+    .nav-links a.active { background: #ff6a00; color: #000; font-weight: 700; }
+    .wrap { max-width: 900px; margin: 30px auto; padding: 20px; }
+    .card { background: #1e1e1e; border: 1px solid #2f2f2f; border-radius: 14px; padding: 24px; }
+    h1 { color: #ff6a00; margin-bottom: 16px; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    label { font-size: 0.9rem; color: #bdbdbd; }
+    input { width: 100%; background: #121212; border: 1px solid #333; color: #fff; padding: 10px; border-radius: 10px; margin-top: 6px; }
+    .full { grid-column: span 2; }
+    .actions { margin-top: 16px; display: flex; gap: 10px; }
+    button.primary { background: #ff6a00; color: #000; border: none; border-radius: 10px; padding: 10px 14px; font-weight: 700; cursor: pointer; }
+    .msg { margin-top: 10px; color: #9be39b; }
+    @media (max-width: 700px){ .grid{grid-template-columns:1fr;} .full{grid-column:span 1;} }
+  </style>
+</head>
+<body>
+  <nav>
+    <a class="logo" href="index.html">Forge</a>
+    <div class="nav-links">
+      <a href="custom-builds.html">Custom Builds</a>
+      <a href="purchases.html">Purchases</a>
+      <a class="active" href="account.html">Account</a>
+      <a href="billing.html">Billing</a>
+      <button onclick="logout()">Logout</button>
+      <a href="cart.html">Cart</a>
+    </div>
+  </nav>
+
+  <div class="wrap">
+    <div class="card">
+      <h1>Account</h1>
+      <form id="accountForm" class="grid">
+        <div>
+          <label>First Name
+            <input id="firstName" required />
+          </label>
+        </div>
+        <div>
+          <label>Last Name
+            <input id="lastName" required />
+          </label>
+        </div>
+        <div class="full">
+          <label>Address
+            <input id="address" required />
+          </label>
+        </div>
+        <div class="full">
+          <label>Email
+            <input id="email" type="email" required />
+          </label>
+        </div>
+        <div class="full">
+          <label>Password
+            <input id="password" type="password" required />
+          </label>
+        </div>
+        <div class="full actions">
+          <button class="primary" type="submit">Save Changes</button>
+        </div>
+      </form>
+      <p id="msg" class="msg"></p>
+    </div>
+  </div>
+
+  <script>
+    function getUsers(){ return JSON.parse(localStorage.getItem('users') || '[]'); }
+    function setUsers(users){ localStorage.setItem('users', JSON.stringify(users)); }
+    function getSession(){ return JSON.parse(sessionStorage.getItem('sessionUser') || localStorage.getItem('sessionUser') || 'null'); }
+
+    function requireUser(){
+      const user = getSession();
+      if (!user) { window.location.href = 'login.html'; return null; }
+      if (user.role === 'admin') { window.location.href = 'admin-dashboard.html'; return null; }
+      return user;
+    }
+
+    function logout(){
+      sessionStorage.removeItem('sessionUser');
+      localStorage.removeItem('sessionUser');
+      window.location.href = 'login.html';
+    }
+
+    function migrateEmailReferences(oldEmail, newEmail){
+      const keys = ['userCarts', 'customBuildsByUser', 'purchaseHistoryByUser', 'billingByUser'];
+      keys.forEach((key) => {
+        const map = JSON.parse(localStorage.getItem(key) || '{}');
+        if (map[oldEmail]) {
+          map[newEmail] = map[oldEmail];
+          delete map[oldEmail];
+          localStorage.setItem(key, JSON.stringify(map));
+        }
+      });
+    }
+
+    const session = requireUser();
+    if (session) {
+      const users = getUsers();
+      const current = users.find(u => u.email === session.email);
+      if (current) {
+        firstName.value = current.firstName || '';
+        lastName.value = current.lastName || '';
+        address.value = current.address || '';
+        email.value = current.email || '';
+        password.value = current.password || '';
+      }
+
+      accountForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const usersNow = getUsers();
+        const idx = usersNow.findIndex(u => u.email === session.email);
+        if (idx < 0) return;
+
+        const oldEmail = usersNow[idx].email;
+        const nextEmail = email.value.trim().toLowerCase();
+        if (nextEmail !== oldEmail && usersNow.some((u, i) => i !== idx && u.email === nextEmail)) {
+          msg.textContent = 'That email is already in use.';
+          return;
+        }
+
+        usersNow[idx] = {
+          ...usersNow[idx],
+          firstName: firstName.value.trim(),
+          lastName: lastName.value.trim(),
+          address: address.value.trim(),
+          email: nextEmail,
+          password: password.value
+        };
+        setUsers(usersNow);
+
+        if (nextEmail !== oldEmail) {
+          migrateEmailReferences(oldEmail, nextEmail);
+        }
+
+        const updatedSession = {
+          id: usersNow[idx].id,
+          role: usersNow[idx].role,
+          email: usersNow[idx].email,
+          firstName: usersNow[idx].firstName,
+          lastName: usersNow[idx].lastName
+        };
+        sessionStorage.setItem('sessionUser', JSON.stringify(updatedSession));
+        localStorage.removeItem('sessionUser');
+        msg.textContent = 'Account updated.';
+      });
+    }
+  </script>
+</body>
+</html>
