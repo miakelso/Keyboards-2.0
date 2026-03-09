@@ -104,7 +104,9 @@
   <script>
     // HARD-CODED ADMIN LIST - To make admins work across all devices, add them to this list in BOTH admin.html and admin-dashboard.html
     const ADMIN_MASTER_LIST = [
-      { id: 'admin-1', role: 'admin', firstName: 'Forge', lastName: 'Admin', email: 'admin@forge.com', password: 'Admin123!', address: 'HQ' }
+      { id: 'admin-1', role: 'admin', firstName: 'Forge', lastName: 'Admin', email: 'admin@forge.com', password: 'Admin123!', address: 'HQ' },
+      { id: 'admin-1773082567997', role: 'admin', firstName: 'Mia', lastName: 'Kelso', email: 'mnkelso@gmail.com', password: 'Temp123', address: 'HQ' },
+      { id: 'admin-1773082722818', role: 'admin', firstName: 'Mariana', lastName: 'Flores', email: 'marianajflores2002@gmail.com', password: 'Temp1234', address: 'HQ' }
     ];
 
     function getSession(){ return JSON.parse(sessionStorage.getItem('sessionUser') || localStorage.getItem('sessionUser') || 'null'); }
