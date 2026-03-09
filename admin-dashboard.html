@@ -69,25 +69,68 @@
     </div>
 
     <div class="panel">
+      <h2>My Account Settings</h2>
+      <p class="small">Update your email or password</p>
+      <br/>
+      <form id="accountForm" class="grid" style="max-width:600px;">
+        <input id="newEmailSelf" type="email" placeholder="new email (optional)" />
+        <input id="newPasswordSelf" type="password" placeholder="new password (optional)" />
+        <input id="confirmPasswordSelf" type="password" placeholder="confirm new password" />
+        <button class="primary" type="submit">Update Account</button>
+      </form>
+      <p id="accountMsg" class="small" style="margin-top:8px;"></p>
+    </div>
+
+    <div class="panel">
       <h2>Manage Admin Accounts</h2>
+      <p class="small">To make admin accounts work across all devices, you must add them to the ADMIN_MASTER_LIST in the code of both admin.html and admin-dashboard.html.</p>
       <form id="adminForm" class="grid">
         <input id="adminFirstName" placeholder="first name" required />
         <input id="adminLastName" placeholder="last name" required />
         <input id="adminNewEmail" type="email" placeholder="admin email" required />
         <input id="adminNewPassword" type="password" placeholder="temporary password" required />
-        <button class="primary" type="submit">Add Admin</button>
+        <button class="primary" type="submit">Generate Admin Code</button>
       </form>
       <p id="adminMsg" class="small" style="margin-top:8px;"></p>
+      <div id="adminCodeOutput" style="margin-top:12px; display:none;">
+        <p class="small" style="margin-bottom:6px;"><strong>Copy this code and add it to ADMIN_MASTER_LIST in both admin.html and admin-dashboard.html:</strong></p>
+        <textarea id="adminCode" readonly style="width:100%; height:80px; font-family:monospace; font-size:0.85rem; padding:8px;"></textarea>
+      </div>
       <br/>
       <div id="adminList"></div>
     </div>
   </div>
 
   <script>
+    // HARD-CODED ADMIN LIST - To make admins work across all devices, add them to this list in BOTH admin.html and admin-dashboard.html
+    const ADMIN_MASTER_LIST = [
+      { id: 'admin-1', role: 'admin', firstName: 'Forge', lastName: 'Admin', email: 'admin@forge.com', password: 'Admin123!', address: 'HQ' }
+    ];
+
     function getSession(){ return JSON.parse(sessionStorage.getItem('sessionUser') || localStorage.getItem('sessionUser') || 'null'); }
     function logout(){ sessionStorage.removeItem('sessionUser'); localStorage.removeItem('sessionUser'); window.location.href='admin.html'; }
     const session = getSession();
     if (!session || session.role !== 'admin') window.location.href = 'admin.html';
+
+    function initializeAdmins() {
+      const users = getUsers();
+      let updated = false;
+      
+      ADMIN_MASTER_LIST.forEach(masterAdmin => {
+        const existing = users.find(u => u.email === masterAdmin.email);
+        if (!existing) {
+          users.push({ ...masterAdmin });
+          updated = true;
+        } else if (existing.role !== 'admin') {
+          existing.role = 'admin';
+          updated = true;
+        }
+      });
+      
+      if (updated) setUsers(users);
+    }
+
+    initializeAdmins();
 
     const defaultCatalog = [
       { id:'kb-001', name:'Tactile Pro', price:'$149.99', image:'images/keyboard1.jpg', shortDesc:'Premium tactile switches with RGB lighting', description:'Premium tactile switch board for work and play.' },
@@ -188,11 +231,13 @@
     function renderAdmins() {
       const users = getUsers();
       const admins = users.filter(u => u.role === 'admin');
+      const currentEmail = session.email;
       adminList.innerHTML = admins.map((a) => `
         <div style="border-top:1px solid #333; padding:8px 0; display:flex; justify-content:space-between; gap:8px;">
           <div>
-            <strong>${a.firstName || ''} ${a.lastName || ''}</strong><br/><span class="small">${a.email}</span>
+            <strong>${a.firstName || ''} ${a.lastName || ''}</strong><br/><span class="small">${a.email}${a.email === currentEmail ? ' (You)' : ''}</span>
           </div>
+          ${a.email !== currentEmail ? `<button class="primary" onclick="deleteAdmin('${a.email}')">Delete</button>` : ''}
         </div>
       `).join('');
     }
@@ -218,29 +263,91 @@
     adminForm.addEventListener('submit', (e) => {
       e.preventDefault();
       adminMsg.textContent = '';
+      adminCodeOutput.style.display = 'none';
 
-      const users = getUsers();
       const email = adminNewEmail.value.trim().toLowerCase();
-      if (users.some(u => u.email === email)) {
+      const firstName = adminFirstName.value.trim();
+      const lastName = adminLastName.value.trim();
+      const password = adminNewPassword.value;
+
+      if (getUsers().some(u => u.email === email)) {
         adminMsg.textContent = 'That email is already used by another account.';
         return;
       }
 
-      users.push({
-        id: `admin-${Date.now()}`,
-        role: 'admin',
-        firstName: adminFirstName.value.trim(),
-        lastName: adminLastName.value.trim(),
-        email,
-        password: adminNewPassword.value,
-        address: 'HQ'
-      });
-
+      // Generate the code to add to ADMIN_MASTER_LIST
+      const adminObject = `{ id: 'admin-${Date.now()}', role: 'admin', firstName: '${firstName}', lastName: '${lastName}', email: '${email}', password: '${password}', address: 'HQ' }`;
+      
+      adminCode.value = adminObject;
+      adminCodeOutput.style.display = 'block';
+      adminMsg.textContent = 'Code generated! Copy the code above and add it to ADMIN_MASTER_LIST in both admin.html and admin-dashboard.html to make this admin available on all devices.';
+      adminMsg.style.color = '#4CAF50';
+      
+      // Also add temporarily to current device
+      const users = getUsers();
+      users.push(JSON.parse(adminObject.replace(/'/g, '"')));
       setUsers(users);
-      adminForm.reset();
-      adminMsg.textContent = 'New admin account created.';
       renderAdmins();
     });
+
+    accountForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      accountMsg.textContent = '';
+
+      const newEmail = newEmailSelf.value.trim().toLowerCase();
+      const newPass = newPasswordSelf.value;
+      const confirmPass = confirmPasswordSelf.value;
+
+      if (!newEmail && !newPass) {
+        accountMsg.textContent = 'Please enter a new email or password.';
+        return;
+      }
+
+      if (newPass && newPass !== confirmPass) {
+        accountMsg.textContent = 'Passwords do not match.';
+        return;
+      }
+
+      const users = getUsers();
+      const currentAdmin = users.find(u => u.email === session.email);
+      if (!currentAdmin) {
+        accountMsg.textContent = 'Error: Admin account not found.';
+        return;
+      }
+
+      if (newEmail && newEmail !== session.email) {
+        if (users.some(u => u.email === newEmail)) {
+          accountMsg.textContent = 'That email is already in use.';
+          return;
+        }
+        
+        const oldEmail = currentAdmin.email;
+        currentAdmin.email = newEmail;
+        
+        session.email = newEmail;
+        sessionStorage.setItem('sessionUser', JSON.stringify(session));
+        localStorage.setItem('sessionUser', JSON.stringify(session));
+      }
+
+      if (newPass) {
+        currentAdmin.password = newPass;
+      }
+
+      setUsers(users);
+      accountForm.reset();
+      accountMsg.textContent = 'Account updated successfully.';
+      if (newEmail) accountMsg.textContent += ' You are now logged in with your new email.';
+    });
+
+    function deleteAdmin(email) {
+      if (!confirm(`Delete admin account ${email}?`)) return;
+      
+      const users = getUsers();
+      const filtered = users.filter(u => u.email !== email);
+      setUsers(filtered);
+      adminMsg.textContent = `Admin ${email} has been deleted.`;
+      renderAdmins();
+    }
 
     renderOrders();
     renderCatalog();

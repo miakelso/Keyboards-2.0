@@ -45,27 +45,36 @@
   </div>
 
   <script>
+    // HARD-CODED ADMIN LIST - Edit this list to add admins that work across all devices
+    const ADMIN_MASTER_LIST = [
+      { id: 'admin-1', role: 'admin', firstName: 'Forge', lastName: 'Admin', email: 'admin@forge.com', password: 'Admin123!', address: 'HQ' }
+    ];
+
     function getUsers(){ return JSON.parse(localStorage.getItem('users') || '[]'); }
     function setUsers(users){ localStorage.setItem('users', JSON.stringify(users)); }
     function getSession(){ return JSON.parse(sessionStorage.getItem('sessionUser') || localStorage.getItem('sessionUser') || 'null'); }
 
-    function ensureAdmin() {
+    function initializeAdmins() {
       const users = getUsers();
-      if (!users.find(u => u.email === 'admin@forge.com')) {
-        users.push({
-          id: 'admin-1',
-          role: 'admin',
-          firstName: 'Forge',
-          lastName: 'Admin',
-          email: 'admin@forge.com',
-          password: 'Admin123!',
-          address: 'HQ'
-        });
-        setUsers(users);
-      }
+      let updated = false;
+      
+      // Ensure all hard-coded admins are in localStorage
+      ADMIN_MASTER_LIST.forEach(masterAdmin => {
+        const existing = users.find(u => u.email === masterAdmin.email);
+        if (!existing) {
+          users.push({ ...masterAdmin });
+          updated = true;
+        } else if (existing.role !== 'admin') {
+          // Ensure the account has admin role
+          existing.role = 'admin';
+          updated = true;
+        }
+      });
+      
+      if (updated) setUsers(users);
     }
 
-    ensureAdmin();
+    initializeAdmins();
 
     const session = getSession();
     if (session && session.role === 'admin') {
