@@ -36,6 +36,28 @@
       }
       .menu-toggle { display:block; }
     }
+    .bottom-bar {
+      width: 100%;
+      background-color: #111;
+      border-top: 1px solid #2a2a2a;
+      padding: 18px 20px;
+      display: flex;
+      justify-content: center;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+    .bottom-bar a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: 500;
+      padding: 8px 12px;
+      border-radius: 6px;
+      transition: 0.3s;
+    }
+    .bottom-bar a:hover {
+      background-color: #ff6a00;
+      color: #000;
+    }
   </style>
 </head>
 <body>
@@ -48,7 +70,7 @@
       <a href="about.html">About</a>
       <a href="faqs.html">FAQs</a>
       <a href="contact.html">Contact</a>
-      <a href="login.html">Login / Sign-Up</a>
+      <a href="login.html">Login/Sign-Up</a>
       <a href="cart.html">Cart</a>
     </div>
   </nav>
@@ -70,6 +92,16 @@
       <div id="msg" class="msg"></div>
       <div class="hint">Default admin demo: admin@forge.com / Admin123!</div>
     </div>
+  </div>
+
+  <!-- Bottom Link Bar -->
+  <div class="bottom-bar">
+    <a href="index.html">Home</a>
+    <a href="login.html">Login/Sign-Up</a>
+    <a href="about.html">About</a>
+    <a href="faqs.html">FAQs</a>
+    <a href="contact.html">Contact Us</a>
+    <a href="admin.html">Admin</a>
   </div>
 
   <script src="api-config.js"></script>
