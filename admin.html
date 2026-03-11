@@ -44,48 +44,40 @@
     </div>
   </div>
 
+  <script src="api-config.js"></script>
   <script>
-    // HARD-CODED ADMIN LIST - Edit this list to add admins that work across all devices
-    const ADMIN_MASTER_LIST = [
-      { id: 'admin-1', role: 'admin', firstName: 'Forge', lastName: 'Admin', email: 'admin@forge.com', password: 'Admin123!', address: 'HQ' }
-    ];
+    const API_URL = window.FORGE_API_URL || 'http://localhost:8080';
 
-    function getUsers(){ return JSON.parse(localStorage.getItem('users') || '[]'); }
-    function setUsers(users){ localStorage.setItem('users', JSON.stringify(users)); }
     function getSession(){ return JSON.parse(sessionStorage.getItem('sessionUser') || localStorage.getItem('sessionUser') || 'null'); }
 
-    function initializeAdmins() {
-      const users = getUsers();
-      let updated = false;
-      
-      // Ensure all hard-coded admins are in localStorage
-      ADMIN_MASTER_LIST.forEach(masterAdmin => {
-        const existing = users.find(u => u.email === masterAdmin.email);
-        if (!existing) {
-          users.push({ ...masterAdmin });
-          updated = true;
-        } else if (existing.role !== 'admin') {
-          // Ensure the account has admin role
-          existing.role = 'admin';
-          updated = true;
+    // Fetch admin list from backend
+    async function loadAdminsFromBackend() {
+      try {
+        const response = await fetch(`${API_URL}/get-admins`);
+        if (!response.ok) {
+          console.error('Failed to load admins from backend');
+          return [];
         }
-      });
-      
-      if (updated) setUsers(users);
+        return await response.json();
+      } catch (error) {
+        console.error('Backend not available:', error);
+        return [];
+      }
     }
-
-    initializeAdmins();
 
     const session = getSession();
     if (session && session.role === 'admin') {
       window.location.href = 'admin-dashboard.html';
     }
 
-    document.getElementById('adminLoginForm').addEventListener('submit', (e) => {
+    document.getElementById('adminLoginForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const email = adminEmail.value.trim().toLowerCase();
       const password = adminPassword.value;
-      const admin = getUsers().find(u => u.email === email && u.password === password && u.role === 'admin');
+      
+      // Load admins from backend
+      const admins = await loadAdminsFromBackend();
+      const admin = admins.find(u => u.email === email && u.password === password && u.role === 'admin');
 
       if (!admin) {
         msg.textContent = 'Invalid admin credentials.';

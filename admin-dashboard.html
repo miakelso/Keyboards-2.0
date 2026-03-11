@@ -83,17 +83,17 @@
 
     <div class="panel">
       <h2>Manage Admin Accounts</h2>
-      <p class="small">To make admin accounts work across all devices, you must add them to the ADMIN_MASTER_LIST in the code of both admin.html and admin-dashboard.html.</p>
+      <p class="small">Admins added here are saved to the backend database and work across all devices connected to this server.</p>
       <form id="adminForm" class="grid">
         <input id="adminFirstName" placeholder="first name" required />
         <input id="adminLastName" placeholder="last name" required />
         <input id="adminNewEmail" type="email" placeholder="admin email" required />
         <input id="adminNewPassword" type="password" placeholder="temporary password" required />
-        <button class="primary" type="submit">Generate Admin Code</button>
+        <button class="primary" type="submit">Add Admin</button>
       </form>
       <p id="adminMsg" class="small" style="margin-top:8px;"></p>
       <div id="adminCodeOutput" style="margin-top:12px; display:none;">
-        <p class="small" style="margin-bottom:6px;"><strong>Copy this code and add it to ADMIN_MASTER_LIST in both admin.html and admin-dashboard.html:</strong></p>
+        <p class="small" style="margin-bottom:6px;"><strong>Admins are now saved directly to the backend database.</strong></p>
         <textarea id="adminCode" readonly style="width:100%; height:80px; font-family:monospace; font-size:0.85rem; padding:8px;"></textarea>
       </div>
       <br/>
@@ -101,38 +101,61 @@
     </div>
   </div>
 
+  <script src="api-config.js"></script>
   <script>
-    // HARD-CODED ADMIN LIST - To make admins work across all devices, add them to this list in BOTH admin.html and admin-dashboard.html
-    const ADMIN_MASTER_LIST = [
-      { id: 'admin-1', role: 'admin', firstName: 'Forge', lastName: 'Admin', email: 'admin@forge.com', password: 'Admin123!', address: 'HQ' },
-      { id: 'admin-1773082567997', role: 'admin', firstName: 'Mia', lastName: 'Kelso', email: 'mnkelso@gmail.com', password: 'Temp123', address: 'HQ' },
-      { id: 'admin-1773082722818', role: 'admin', firstName: 'Mariana', lastName: 'Flores', email: 'marianajflores2002@gmail.com', password: 'Temp1234', address: 'HQ' }
-    ];
+    const API_URL = window.FORGE_API_URL || 'http://localhost:8080';
 
     function getSession(){ return JSON.parse(sessionStorage.getItem('sessionUser') || localStorage.getItem('sessionUser') || 'null'); }
     function logout(){ sessionStorage.removeItem('sessionUser'); localStorage.removeItem('sessionUser'); window.location.href='admin.html'; }
     const session = getSession();
     if (!session || session.role !== 'admin') window.location.href = 'admin.html';
 
-    function initializeAdmins() {
-      const users = getUsers();
-      let updated = false;
-      
-      ADMIN_MASTER_LIST.forEach(masterAdmin => {
-        const existing = users.find(u => u.email === masterAdmin.email);
-        if (!existing) {
-          users.push({ ...masterAdmin });
-          updated = true;
-        } else if (existing.role !== 'admin') {
-          existing.role = 'admin';
-          updated = true;
+    // Fetch admin list from backend
+    async function getAdminsFromBackend() {
+      try {
+        const response = await fetch(`${API_URL}/get-admins`);
+        if (!response.ok) {
+          console.error('Failed to fetch admins from backend');
+          return [];
         }
-      });
-      
-      if (updated) setUsers(users);
+        return await response.json();
+      } catch (error) {
+        console.error('Backend not available:', error);
+        return [];
+      }
     }
 
-    initializeAdmins();
+    // Add admin to backend
+    async function addAdminToBackend(firstName, lastName, email, password) {
+      try {
+        const response = await fetch(`${API_URL}/add-admin`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ firstName, lastName, email, password })
+        });
+        const data = await response.json();
+        return { success: response.ok, data };
+      } catch (error) {
+        console.error('Error adding admin:', error);
+        return { success: false, data: { error: error.message } };
+      }
+    }
+
+    // Delete admin from backend
+    async function deleteAdminFromBackend(email) {
+      try {
+        const response = await fetch(`${API_URL}/delete-admin`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
+        const data = await response.json();
+        return { success: response.ok, data };
+      } catch (error) {
+        console.error('Error deleting admin:', error);
+        return { success: false, data: { error: error.message } };
+      }
+    }
 
     const defaultCatalog = [
       { id:'kb-001', name:'Tactile Pro', price:'$149.99', image:'images/keyboard1.jpg', shortDesc:'Premium tactile switches with RGB lighting', description:'Premium tactile switch board for work and play.' },
@@ -153,8 +176,6 @@
     }
 
     function setCatalog(list){ localStorage.setItem('prebuiltCatalog', JSON.stringify(list)); }
-    function getUsers(){ return JSON.parse(localStorage.getItem('users') || '[]'); }
-    function setUsers(users){ localStorage.setItem('users', JSON.stringify(users)); }
 
     function renderOrders(){
       const allOrders = JSON.parse(localStorage.getItem('ordersAll') || '[]');
@@ -230,9 +251,8 @@
       renderCatalog();
     }
 
-    function renderAdmins() {
-      const users = getUsers();
-      const admins = users.filter(u => u.role === 'admin');
+    async function renderAdmins() {
+      const admins = await getAdminsFromBackend();
       const currentEmail = session.email;
       adminList.innerHTML = admins.map((a) => `
         <div style="border-top:1px solid #333; padding:8px 0; display:flex; justify-content:space-between; gap:8px;">
@@ -262,7 +282,7 @@
       renderCatalog();
     });
 
-    adminForm.addEventListener('submit', (e) => {
+    adminForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       adminMsg.textContent = '';
       adminCodeOutput.style.display = 'none';
@@ -272,24 +292,19 @@
       const lastName = adminLastName.value.trim();
       const password = adminNewPassword.value;
 
-      if (getUsers().some(u => u.email === email)) {
-        adminMsg.textContent = 'That email is already used by another account.';
+      // Try to add to backend
+      const result = await addAdminToBackend(firstName, lastName, email, password);
+      
+      if (!result.success) {
+        adminMsg.textContent = result.data.error || 'Failed to add admin';
+        adminMsg.style.color = '#ff6a6a';
         return;
       }
 
-      // Generate the code to add to ADMIN_MASTER_LIST
-      const adminObject = `{ id: 'admin-${Date.now()}', role: 'admin', firstName: '${firstName}', lastName: '${lastName}', email: '${email}', password: '${password}', address: 'HQ' }`;
-      
-      adminCode.value = adminObject;
-      adminCodeOutput.style.display = 'block';
-      adminMsg.textContent = 'Code generated! Copy the code above and add it to ADMIN_MASTER_LIST in both admin.html and admin-dashboard.html to make this admin available on all devices.';
+      adminMsg.textContent = `✓ Admin ${email} has been added successfully and is now available on all devices!`;
       adminMsg.style.color = '#4CAF50';
-      
-      // Also add temporarily to current device
-      const users = getUsers();
-      users.push(JSON.parse(adminObject.replace(/'/g, '"')));
-      setUsers(users);
-      renderAdmins();
+      adminForm.reset();
+      await renderAdmins();
     });
 
     accountForm.addEventListener('submit', (e) => {
@@ -310,45 +325,24 @@
         return;
       }
 
-      const users = getUsers();
-      const currentAdmin = users.find(u => u.email === session.email);
-      if (!currentAdmin) {
-        accountMsg.textContent = 'Error: Admin account not found.';
-        return;
-      }
-
-      if (newEmail && newEmail !== session.email) {
-        if (users.some(u => u.email === newEmail)) {
-          accountMsg.textContent = 'That email is already in use.';
-          return;
-        }
-        
-        const oldEmail = currentAdmin.email;
-        currentAdmin.email = newEmail;
-        
-        session.email = newEmail;
-        sessionStorage.setItem('sessionUser', JSON.stringify(session));
-        localStorage.setItem('sessionUser', JSON.stringify(session));
-      }
-
-      if (newPass) {
-        currentAdmin.password = newPass;
-      }
-
-      setUsers(users);
-      accountForm.reset();
-      accountMsg.textContent = 'Account updated successfully.';
-      if (newEmail) accountMsg.textContent += ' You are now logged in with your new email.';
+      accountMsg.textContent = 'Account update feature coming soon (backend integration required).';
+      accountMsg.style.color = '#ffb77a';
     });
 
-    function deleteAdmin(email) {
+    async function deleteAdmin(email) {
       if (!confirm(`Delete admin account ${email}?`)) return;
       
-      const users = getUsers();
-      const filtered = users.filter(u => u.email !== email);
-      setUsers(filtered);
-      adminMsg.textContent = `Admin ${email} has been deleted.`;
-      renderAdmins();
+      const result = await deleteAdminFromBackend(email);
+      
+      if (result.success) {
+        adminMsg.textContent = `✓ Admin ${email} has been deleted from all devices!`;
+        adminMsg.style.color = '#4CAF50';
+      } else {
+        adminMsg.textContent = result.data.error || 'Failed to delete admin';
+        adminMsg.style.color = '#ff6a6a';
+      }
+      
+      await renderAdmins();
     }
 
     renderOrders();

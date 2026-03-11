@@ -1,0 +1,11 @@
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by org.sqlite.SQLiteJDBCLoader in an unnamed module (file:/Users/miakelso/Documents/GitHub/Keyboards-2.0/sqlite-jdbc-3.51.2.0.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+Database ready! forge.db created (if not existed).
+ForgeServer running at http://localhost:8080
+Admin endpoints:
+  GET  /get-admins
+  POST /add-admin
+  POST /delete-admin
