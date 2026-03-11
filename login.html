@@ -9,6 +9,17 @@
 		body { background: #0a0a0a; color: #fff; min-height: 100vh; }
 		nav { width: 100%; background: #111; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
 		.logo { color: #ff6a00; text-decoration: none; font-size: 1.8rem; font-weight: 700; letter-spacing: 2px; }
+		.nav-links { display: flex; gap: 25px; }
+		.nav-links a {
+			text-decoration: none;
+			color: #fff;
+			font-weight: 500;
+			padding: 8px 12px;
+			border-radius: 6px;
+			transition: 0.3s;
+		}
+		.nav-links a:hover { background-color: #ff6a00; color: #000; }
+		.menu-toggle { display: none; font-size: 1.5rem; cursor: pointer; color: #fff; }
 		.shell { max-width: 980px; margin: 40px auto; padding: 0 20px; }
 		.auth {
 			background: linear-gradient(180deg, #1a1a1a, #151515);
@@ -65,11 +76,36 @@
 			.grid { grid-template-columns: 1fr; }
 			.full { grid-column: span 1; }
 		}
+		@media (max-width: 768px) {
+			.nav-links { display: none; }
+			.nav-links.mobile-active {
+				display: flex;
+				flex-direction: column;
+				position: absolute;
+				top: 60px;
+				right: 30px;
+				background-color: #111;
+				padding: 15px;
+				border-radius: 8px;
+			}
+			.menu-toggle { display: block; }
+		}
 	</style>
+	
 </head>
 <body>
 	<nav>
 		<a href="index.html" class="logo">Forge</a>
+		<div class="menu-toggle" onclick="toggleMenu()">☰</div>
+		<div class="nav-links" id="navLinks">
+			<a href="shop.html">Pre-Built Keyboards</a>
+			<a href="builder.html">Custom Keyboards</a>
+			<a href="about.html">About</a>
+			<a href="faqs.html">FAQs</a>
+			<a href="contact.html">Contact</a>
+			<a href="login.html">Login / Sign-Up</a>
+			<a href="cart.html">Cart</a>
+		</div>
 	</nav>
 
 	<div class="shell">
@@ -163,6 +199,11 @@
 	</div>
 
 	<script>
+		function toggleMenu() {
+			const nav = document.getElementById('navLinks');
+			nav.classList.toggle('mobile-active');
+		}
+
 		function showTab(tab) {
 			const loginForm = document.getElementById('loginForm');
 			const signupForm = document.getElementById('signupForm');

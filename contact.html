@@ -39,6 +39,7 @@
       transition: 0.3s;
     }
     .nav-links a:hover { background: #ff6a00; color: #000; }
+    .menu-toggle { display: none; font-size: 1.5rem; cursor: pointer; color: #fff; }
 
     .hero {
       padding: 65px 20px 30px;
@@ -115,18 +116,34 @@
     @media (max-width: 720px) {
       .grid { grid-template-columns: 1fr; }
     }
+
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .nav-links.mobile-active {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        top: 60px;
+        right: 30px;
+        background-color: #111;
+        padding: 15px;
+        border-radius: 8px;
+      }
+      .menu-toggle { display: block; }
+    }
   </style>
 </head>
 <body>
   <nav>
     <a href="index.html" class="logo">Forge</a>
-    <div class="nav-links">
-      <a href="shop.html">Pre-Built</a>
-      <a href="builder.html">Custom Builds</a>
+    <div class="menu-toggle" onclick="toggleMenu()">☰</div>
+    <div class="nav-links" id="navLinks">
+      <a href="shop.html">Pre-Built Keyboards</a>
+      <a href="builder.html">Custom Keyboards</a>
       <a href="about.html">About</a>
       <a href="faqs.html">FAQs</a>
       <a href="contact.html">Contact</a>
-      <a href="login.html">Login</a>
+      <a href="login.html">Login / Sign-Up</a>
       <a href="cart.html">Cart</a>
     </div>
   </nav>
@@ -173,6 +190,11 @@
 
   <script src="api-config.js"></script>
   <script>
+    function toggleMenu() {
+      const nav = document.getElementById('navLinks');
+      nav.classList.toggle('mobile-active');
+    }
+
     const API_URL = window.FORGE_API_URL || 'http://localhost:8080';
 
     document.getElementById('contactForm').addEventListener('submit', async (e) => {

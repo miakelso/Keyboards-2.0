@@ -9,7 +9,10 @@
     body { background:#0a0a0a; color:#fff; }
     nav { background:#111; padding:15px 30px; display:flex; justify-content:space-between; align-items:center; }
     .logo { color:#ff6a00; text-decoration:none; font-size:1.6rem; font-weight:700; letter-spacing:2px; }
-    .nav-links button { color:#fff; background:#222; border:none; padding:8px 12px; border-radius:8px; cursor:pointer; }
+    .nav-links { display:flex; gap:25px; }
+    .nav-links a, .nav-links button { text-decoration:none; color:#fff; font-weight:500; padding:8px 12px; border-radius:6px; transition:0.3s; background:none; border:none; cursor:pointer; }
+    .nav-links a:hover, .nav-links button:hover { background-color:#ff6a00; color:#000; }
+    .menu-toggle { display:none; font-size:1.5rem; cursor:pointer; color:#fff; }
     .wrap { max-width:1200px; margin:24px auto; padding:0 20px; }
     h1 { color:#ff6a00; margin-bottom:14px; }
     .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px; margin-bottom:20px; }
@@ -23,12 +26,34 @@
     button.primary { background:#ff6a00; color:#000; border:none; border-radius:8px; padding:8px 12px; cursor:pointer; font-weight:700; }
     .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:10px; }
     .small { color:#bcbcbc; font-size:0.9rem; }
+    @media (max-width:768px) {
+      .nav-links { display:none; }
+      .nav-links.mobile-active {
+        display:flex;
+        flex-direction:column;
+        position:absolute;
+        top:60px;
+        right:30px;
+        background-color:#111;
+        padding:15px;
+        border-radius:8px;
+      }
+      .menu-toggle { display:block; }
+    }
   </style>
 </head>
 <body>
   <nav>
-    <a class="logo" href="index.html">Forge Admin</a>
-    <div class="nav-links">
+    <a class="logo" href="index.html">Forge</a>
+    <div class="menu-toggle" onclick="toggleMenu()">☰</div>
+    <div class="nav-links" id="navLinks">
+      <a href="shop.html">Pre-Built Keyboards</a>
+      <a href="builder.html">Custom Keyboards</a>
+      <a href="about.html">About</a>
+      <a href="faqs.html">FAQs</a>
+      <a href="contact.html">Contact</a>
+      <a href="login.html">Login / Sign-Up</a>
+      <a href="cart.html">Cart</a>
       <button onclick="logout()">Logout</button>
     </div>
   </nav>
@@ -103,6 +128,11 @@
 
   <script src="api-config.js"></script>
   <script>
+    function toggleMenu() {
+      const nav = document.getElementById('navLinks');
+      nav.classList.toggle('mobile-active');
+    }
+
     const API_URL = window.FORGE_API_URL || 'http://localhost:8080';
 
     function getSession(){ return JSON.parse(sessionStorage.getItem('sessionUser') || localStorage.getItem('sessionUser') || 'null'); }

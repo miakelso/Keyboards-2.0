@@ -9,6 +9,10 @@
     body { background:#0a0a0a; color:#fff; min-height:100vh; }
     nav { background:#111; padding:15px 30px; display:flex; justify-content:space-between; align-items:center; }
     .logo { color:#ff6a00; text-decoration:none; font-size:1.6rem; font-weight:700; letter-spacing:2px; }
+    .nav-links { display:flex; gap:25px; }
+    .nav-links a { text-decoration:none; color:#fff; font-weight:500; padding:8px 12px; border-radius:6px; transition:0.3s; }
+    .nav-links a:hover { background-color:#ff6a00; color:#000; }
+    .menu-toggle { display:none; font-size:1.5rem; cursor:pointer; color:#fff; }
     .wrap { max-width:520px; margin:60px auto; padding:0 20px; }
     .card { background:#1e1e1e; border:1px solid #2f2f2f; border-radius:14px; padding:24px; }
     h1 { color:#ff6a00; margin-bottom:8px; }
@@ -18,11 +22,35 @@
     button { width:100%; margin-top:18px; background:#ff6a00; color:#000; border:none; border-radius:10px; padding:11px; font-weight:700; cursor:pointer; }
     .msg { margin-top:10px; color:#ffb77a; }
     .hint { margin-top:10px; color:#8f8f8f; font-size:0.9rem; }
+    @media (max-width:768px) {
+      .nav-links { display:none; }
+      .nav-links.mobile-active {
+        display:flex;
+        flex-direction:column;
+        position:absolute;
+        top:60px;
+        right:30px;
+        background-color:#111;
+        padding:15px;
+        border-radius:8px;
+      }
+      .menu-toggle { display:block; }
+    }
   </style>
 </head>
 <body>
   <nav>
-    <a class="logo" href="index.html">Forge Admin</a>
+    <a class="logo" href="index.html">Forge</a>
+    <div class="menu-toggle" onclick="toggleMenu()">☰</div>
+    <div class="nav-links" id="navLinks">
+      <a href="shop.html">Pre-Built Keyboards</a>
+      <a href="builder.html">Custom Keyboards</a>
+      <a href="about.html">About</a>
+      <a href="faqs.html">FAQs</a>
+      <a href="contact.html">Contact</a>
+      <a href="login.html">Login / Sign-Up</a>
+      <a href="cart.html">Cart</a>
+    </div>
   </nav>
 
   <div class="wrap">
@@ -46,6 +74,11 @@
 
   <script src="api-config.js"></script>
   <script>
+    function toggleMenu() {
+      const nav = document.getElementById('navLinks');
+      nav.classList.toggle('mobile-active');
+    }
+
     const API_URL = window.FORGE_API_URL || 'http://localhost:8080';
 
     function getSession(){ return JSON.parse(sessionStorage.getItem('sessionUser') || localStorage.getItem('sessionUser') || 'null'); }

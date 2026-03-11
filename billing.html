@@ -9,9 +9,10 @@
     body { background: #0a0a0a; color: #fff; }
     nav { background:#111; padding:15px 30px; display:flex; justify-content:space-between; align-items:center; }
     .logo { color:#ff6a00; text-decoration:none; font-size:1.6rem; font-weight:700; letter-spacing:2px; }
-    .nav-links { display:flex; gap:12px; flex-wrap:wrap; }
-    .nav-links a, .nav-links button { color:#fff; text-decoration:none; background:#222; border:none; padding:8px 12px; border-radius:8px; cursor:pointer; }
-    .nav-links a.active { background:#ff6a00; color:#000; font-weight:700; }
+    .nav-links { display:flex; gap:25px; }
+    .nav-links a { text-decoration:none; color:#fff; font-weight:500; padding:8px 12px; border-radius:6px; transition:0.3s; }
+    .nav-links a:hover { background-color:#ff6a00; color:#000; }
+    .menu-toggle { display:none; font-size:1.5rem; cursor:pointer; color:#fff; }
     .wrap { max-width:900px; margin:30px auto; padding:0 20px; }
     .card { background:#1e1e1e; border:1px solid #2f2f2f; border-radius:14px; padding:24px; }
     h1 { color:#ff6a00; margin-bottom:16px; }
@@ -22,17 +23,33 @@
     button { margin-top:12px; background:#ff6a00; color:#000; border:none; border-radius:10px; padding:10px 14px; font-weight:700; cursor:pointer; }
     .note { margin-top:10px; color:#9be39b; }
     @media (max-width:700px){ .grid{grid-template-columns:1fr;} .full{grid-column:span 1;} }
+    @media (max-width:768px) {
+      .nav-links { display:none; }
+      .nav-links.mobile-active {
+        display:flex;
+        flex-direction:column;
+        position:absolute;
+        top:60px;
+        right:30px;
+        background-color:#111;
+        padding:15px;
+        border-radius:8px;
+      }
+      .menu-toggle { display:block; }
+    }
   </style>
 </head>
 <body>
   <nav>
     <a class="logo" href="index.html">Forge</a>
-    <div class="nav-links">
-      <a href="custom-builds.html">Custom Builds</a>
-      <a href="purchases.html">Purchases</a>
-      <a href="account.html">Account</a>
-      <a class="active" href="billing.html">Billing</a>
-      <button onclick="logout()">Logout</button>
+    <div class="menu-toggle" onclick="toggleMenu()">☰</div>
+    <div class="nav-links" id="navLinks">
+      <a href="shop.html">Pre-Built Keyboards</a>
+      <a href="builder.html">Custom Keyboards</a>
+      <a href="about.html">About</a>
+      <a href="faqs.html">FAQs</a>
+      <a href="contact.html">Contact</a>
+      <a href="login.html">Login / Sign-Up</a>
       <a href="cart.html">Cart</a>
     </div>
   </nav>
@@ -75,6 +92,11 @@
   </div>
 
   <script>
+    function toggleMenu() {
+      const nav = document.getElementById('navLinks');
+      nav.classList.toggle('mobile-active');
+    }
+
     function getSession(){ return JSON.parse(sessionStorage.getItem('sessionUser') || localStorage.getItem('sessionUser') || 'null'); }
     function logout(){ sessionStorage.removeItem('sessionUser'); localStorage.removeItem('sessionUser'); window.location.href='login.html'; }
     const session = getSession();
