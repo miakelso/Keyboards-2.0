@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact Forge</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background: #0a0a0a; color: #fff; }
+
+    nav {
+      width: 100%;
+      background-color: #111;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    }
+
+    .logo {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: #ff6a00;
+      text-decoration: none;
+      letter-spacing: 2px;
+    }
+
+    .nav-links { display: flex; gap: 18px; flex-wrap: wrap; }
+    .nav-links a {
+      text-decoration: none;
+      color: #fff;
+      font-weight: 500;
+      padding: 8px 12px;
+      border-radius: 6px;
+      transition: 0.3s;
+    }
+    .nav-links a:hover { background: #ff6a00; color: #000; }
+
+    .hero {
+      padding: 65px 20px 30px;
+      text-align: center;
+      background: linear-gradient(180deg, #1b1b1b 0%, #0a0a0a 100%);
+      border-bottom: 1px solid #262626;
+    }
+
+    .hero h1 { color: #ff6a00; font-size: clamp(2rem, 5vw, 3rem); margin-bottom: 10px; }
+    .hero p { color: #d1d1d1; max-width: 760px; margin: 0 auto; line-height: 1.7; }
+
+    .wrap { max-width: 850px; margin: 0 auto; padding: 32px 20px 60px; }
+
+    .card {
+      background: #161616;
+      border: 1px solid #2a2a2a;
+      border-radius: 14px;
+      padding: 22px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    label { display: block; color: #cfcfcf; font-size: 0.95rem; margin-bottom: 6px; }
+    input, textarea {
+      width: 100%;
+      background: #101010;
+      color: #fff;
+      border: 1px solid #333;
+      border-radius: 10px;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+
+    textarea { min-height: 140px; resize: vertical; }
+
+    button {
+      background: #ff6a00;
+      color: #000;
+      border: none;
+      border-radius: 10px;
+      padding: 11px 16px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .msg { margin-top: 10px; color: #d6d6d6; }
+
+    .bottom-bar {
+      width: 100%;
+      background-color: #111;
+      border-top: 1px solid #2a2a2a;
+      padding: 18px 20px;
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .bottom-bar a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: 500;
+      padding: 8px 12px;
+      border-radius: 6px;
+      transition: 0.3s;
+    }
+
+    .bottom-bar a:hover { background: #ff6a00; color: #000; }
+
+    @media (max-width: 720px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="index.html" class="logo">Forge</a>
+    <div class="nav-links">
+      <a href="shop.html">Pre-Built</a>
+      <a href="builder.html">Custom Builds</a>
+      <a href="about.html">About</a>
+      <a href="faqs.html">FAQs</a>
+      <a href="contact.html">Contact</a>
+      <a href="login.html">Login</a>
+      <a href="cart.html">Cart</a>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <h1>Contact Us</h1>
+    <p>Send a message to the Forge team. Your submission is saved and delivered to admin emails.</p>
+  </section>
+
+  <main class="wrap">
+    <div class="card">
+      <form id="contactForm">
+        <div class="grid">
+          <div>
+            <label for="name">Full Name</label>
+            <input id="name" required />
+          </div>
+          <div>
+            <label for="email">Email</label>
+            <input id="email" type="email" required />
+          </div>
+        </div>
+
+        <label for="subject">Subject</label>
+        <input id="subject" required />
+
+        <label for="message">Message</label>
+        <textarea id="message" required></textarea>
+
+        <button type="submit">Send Message</button>
+        <p id="contactMsg" class="msg"></p>
+      </form>
+    </div>
+  </main>
+
+  <div class="bottom-bar">
+    <a href="index.html">Home</a>
+    <a href="about.html">About</a>
+    <a href="faqs.html">FAQs</a>
+    <a href="contact.html">Contact</a>
+    <a href="shop.html">Shop</a>
+    <a href="builder.html">Builder</a>
+  </div>
+
+  <script src="api-config.js"></script>
+  <script>
+    const API_URL = window.FORGE_API_URL || 'http://localhost:8080';
+
+    document.getElementById('contactForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const msg = document.getElementById('contactMsg');
+      msg.textContent = 'Sending...';
+
+      const payload = {
+        name: document.getElementById('name').value.trim(),
+        email: document.getElementById('email').value.trim().toLowerCase(),
+        subject: document.getElementById('subject').value.trim(),
+        message: document.getElementById('message').value.trim()
+      };
+
+      try {
+        const res = await fetch(`${API_URL}/contact`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+          msg.style.color = '#ff7a7a';
+          msg.textContent = data.error || 'Unable to send message right now.';
+          return;
+        }
+
+        msg.style.color = '#83e783';
+        msg.textContent = 'Message sent successfully. Our team will get back to you.';
+        document.getElementById('contactForm').reset();
+      } catch (error) {
+        msg.style.color = '#ff7a7a';
+        msg.textContent = 'Could not connect to support service.';
+      }
+    });
+  </script>
+</body>
+</html>
