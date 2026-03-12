@@ -124,14 +124,15 @@
     <a href="admin.html">Admin</a>
   </div>
 
+  <script src="api-config.js"></script>
   <script>
+    const API_URL = window.FORGE_API_URL || 'http://localhost:8080';
+
     function toggleMenu() {
       const nav = document.getElementById('navLinks');
       nav.classList.toggle('mobile-active');
     }
 
-    function getUsers(){ return JSON.parse(localStorage.getItem('users') || '[]'); }
-    function setUsers(users){ localStorage.setItem('users', JSON.stringify(users)); }
     function getSession(){ return JSON.parse(sessionStorage.getItem('sessionUser') || localStorage.getItem('sessionUser') || 'null'); }
 
     function requireUser(){
@@ -161,53 +162,62 @@
 
     const session = requireUser();
     if (session) {
-      const users = getUsers();
-      const current = users.find(u => u.email === session.email);
-      if (current) {
-        firstName.value = current.firstName || '';
-        lastName.value = current.lastName || '';
-        address.value = current.address || '';
-        email.value = current.email || '';
-        password.value = current.password || '';
-      }
+      fetch(`${API_URL}/get-user?email=${encodeURIComponent(session.email)}`)
+        .then(res => res.json())
+        .then(data => {
+          if (!data.success || !data.user) return;
+          const current = data.user;
+          firstName.value = current.firstName || '';
+          lastName.value = current.lastName || '';
+          address.value = current.address || '';
+          email.value = current.email || '';
+        })
+        .catch(() => {});
 
-      accountForm.addEventListener('submit', (e) => {
+      accountForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const usersNow = getUsers();
-        const idx = usersNow.findIndex(u => u.email === session.email);
-        if (idx < 0) return;
+        msg.textContent = '';
 
-        const oldEmail = usersNow[idx].email;
+        const oldEmail = session.email;
         const nextEmail = email.value.trim().toLowerCase();
-        if (nextEmail !== oldEmail && usersNow.some((u, i) => i !== idx && u.email === nextEmail)) {
-          msg.textContent = 'That email is already in use.';
-          return;
+
+        try {
+          const response = await fetch(`${API_URL}/update-user`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              oldEmail,
+              firstName: firstName.value.trim(),
+              lastName: lastName.value.trim(),
+              address: address.value.trim(),
+              email: nextEmail,
+              password: password.value
+            })
+          });
+          const data = await response.json();
+
+          if (!response.ok || !data.success) {
+            msg.textContent = data.error || 'Unable to update account.';
+            return;
+          }
+
+          if (nextEmail !== oldEmail) {
+            migrateEmailReferences(oldEmail, nextEmail);
+          }
+
+          const updatedSession = {
+            id: session.id,
+            role: 'user',
+            email: nextEmail,
+            firstName: firstName.value.trim(),
+            lastName: lastName.value.trim()
+          };
+          sessionStorage.setItem('sessionUser', JSON.stringify(updatedSession));
+          localStorage.removeItem('sessionUser');
+          msg.textContent = 'Account updated.';
+        } catch (err) {
+          msg.textContent = 'Could not connect to account service.';
         }
-
-        usersNow[idx] = {
-          ...usersNow[idx],
-          firstName: firstName.value.trim(),
-          lastName: lastName.value.trim(),
-          address: address.value.trim(),
-          email: nextEmail,
-          password: password.value
-        };
-        setUsers(usersNow);
-
-        if (nextEmail !== oldEmail) {
-          migrateEmailReferences(oldEmail, nextEmail);
-        }
-
-        const updatedSession = {
-          id: usersNow[idx].id,
-          role: usersNow[idx].role,
-          email: usersNow[idx].email,
-          firstName: usersNow[idx].firstName,
-          lastName: usersNow[idx].lastName
-        };
-        sessionStorage.setItem('sessionUser', JSON.stringify(updatedSession));
-        localStorage.removeItem('sessionUser');
-        msg.textContent = 'Account updated.';
       });
     }
   </script>

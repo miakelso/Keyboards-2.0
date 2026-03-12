@@ -75,6 +75,19 @@ public class ForgeServer {
             """);
         }
 
+        // 3c️⃣ Users table for customer accounts
+        stmt.execute("""
+        CREATE TABLE IF NOT EXISTS users(
+            id TEXT PRIMARY KEY,
+            "firstName" TEXT,
+            "lastName" TEXT,
+            email TEXT UNIQUE,
+            password TEXT,
+            address TEXT,
+            role TEXT DEFAULT 'user'
+        )
+        """);
+
         System.out.println("Database ready! using " + (usingPostgres ? "Postgres" : "SQLite") + ".");
 
         // 4️⃣ Start HTTP server with API endpoints
@@ -261,6 +274,233 @@ public class ForgeServer {
             }
         });
 
+        // User signup
+        server.createContext("/signup-user", exchange -> {
+            if ("OPTIONS".equals(exchange.getRequestMethod())) {
+                sendResponse(exchange, 204, "");
+                return;
+            }
+            if (!"POST".equals(exchange.getRequestMethod())) {
+                sendResponse(exchange, 405, "Method not allowed");
+                return;
+            }
+            try {
+                String body = readBody(exchange);
+                JSONObject data = new JSONObject(body);
+
+                String firstName = data.optString("firstName", "").trim();
+                String lastName = data.optString("lastName", "").trim();
+                String email = data.optString("email", "").trim().toLowerCase();
+                String password = data.optString("password", "");
+                String address = data.optString("address", "").trim();
+
+                if (firstName.isEmpty() || lastName.isEmpty() || email.isEmpty() || password.isEmpty()) {
+                    sendResponse(exchange, 400, "{\"success\":false,\"error\":\"Missing required fields\"}");
+                    return;
+                }
+
+                String id = "u-" + System.currentTimeMillis();
+                String sql = "INSERT INTO users(id, \"firstName\", \"lastName\", email, password, address, role) VALUES(?, ?, ?, ?, ?, ?, 'user')";
+                PreparedStatement pst = conn.prepareStatement(sql);
+                pst.setString(1, id);
+                pst.setString(2, firstName);
+                pst.setString(3, lastName);
+                pst.setString(4, email);
+                pst.setString(5, password);
+                pst.setString(6, address);
+                pst.executeUpdate();
+                pst.close();
+
+                JSONObject user = new JSONObject();
+                user.put("id", id);
+                user.put("role", "user");
+                user.put("firstName", firstName);
+                user.put("lastName", lastName);
+                user.put("email", email);
+                user.put("address", address);
+
+                JSONObject response = new JSONObject();
+                response.put("success", true);
+                response.put("user", user);
+                sendResponse(exchange, 201, response.toString());
+            } catch (SQLException e) {
+                if (isUniqueViolation(e)) {
+                    sendResponse(exchange, 400, "{\"success\":false,\"error\":\"An account with that email already exists\"}");
+                } else {
+                    sendResponse(exchange, 500, "{\"success\":false,\"error\":\"" + e.getMessage() + "\"}");
+                }
+            } catch (Exception e) {
+                sendResponse(exchange, 500, "{\"success\":false,\"error\":\"" + e.getMessage() + "\"}");
+            }
+        });
+
+        // User login
+        server.createContext("/login-user", exchange -> {
+            if ("OPTIONS".equals(exchange.getRequestMethod())) {
+                sendResponse(exchange, 204, "");
+                return;
+            }
+            if (!"POST".equals(exchange.getRequestMethod())) {
+                sendResponse(exchange, 405, "Method not allowed");
+                return;
+            }
+            try {
+                String body = readBody(exchange);
+                JSONObject data = new JSONObject(body);
+                String email = data.optString("email", "").trim().toLowerCase();
+                String password = data.optString("password", "");
+
+                if (email.isEmpty() || password.isEmpty()) {
+                    sendResponse(exchange, 400, "{\"success\":false,\"error\":\"Email and password are required\"}");
+                    return;
+                }
+
+                String sql = "SELECT id, \"firstName\" AS \"firstName\", \"lastName\" AS \"lastName\", email, address, role FROM users WHERE email = ? AND password = ?";
+                PreparedStatement pst = conn.prepareStatement(sql);
+                pst.setString(1, email);
+                pst.setString(2, password);
+                ResultSet rs = pst.executeQuery();
+
+                if (!rs.next()) {
+                    rs.close();
+                    pst.close();
+                    sendResponse(exchange, 401, "{\"success\":false,\"error\":\"Invalid email or password\"}");
+                    return;
+                }
+
+                JSONObject user = new JSONObject();
+                user.put("id", rs.getString("id"));
+                user.put("role", rs.getString("role"));
+                user.put("firstName", rs.getString("firstName"));
+                user.put("lastName", rs.getString("lastName"));
+                user.put("email", rs.getString("email"));
+                user.put("address", rs.getString("address"));
+
+                rs.close();
+                pst.close();
+
+                JSONObject response = new JSONObject();
+                response.put("success", true);
+                response.put("user", user);
+                sendResponse(exchange, 200, response.toString());
+            } catch (Exception e) {
+                sendResponse(exchange, 500, "{\"success\":false,\"error\":\"" + e.getMessage() + "\"}");
+            }
+        });
+
+        // Get user profile by email
+        server.createContext("/get-user", exchange -> {
+            if ("OPTIONS".equals(exchange.getRequestMethod())) {
+                sendResponse(exchange, 204, "");
+                return;
+            }
+            if (!"GET".equals(exchange.getRequestMethod())) {
+                sendResponse(exchange, 405, "Method not allowed");
+                return;
+            }
+            try {
+                String query = exchange.getRequestURI().getQuery();
+                String email = getQueryParam(query, "email").trim().toLowerCase();
+                if (email.isEmpty()) {
+                    sendResponse(exchange, 400, "{\"success\":false,\"error\":\"Email is required\"}");
+                    return;
+                }
+
+                String sql = "SELECT id, \"firstName\" AS \"firstName\", \"lastName\" AS \"lastName\", email, address, role FROM users WHERE email = ?";
+                PreparedStatement pst = conn.prepareStatement(sql);
+                pst.setString(1, email);
+                ResultSet rs = pst.executeQuery();
+                if (!rs.next()) {
+                    rs.close();
+                    pst.close();
+                    sendResponse(exchange, 404, "{\"success\":false,\"error\":\"User not found\"}");
+                    return;
+                }
+
+                JSONObject user = new JSONObject();
+                user.put("id", rs.getString("id"));
+                user.put("role", rs.getString("role"));
+                user.put("firstName", rs.getString("firstName"));
+                user.put("lastName", rs.getString("lastName"));
+                user.put("email", rs.getString("email"));
+                user.put("address", rs.getString("address"));
+
+                rs.close();
+                pst.close();
+
+                JSONObject response = new JSONObject();
+                response.put("success", true);
+                response.put("user", user);
+                sendResponse(exchange, 200, response.toString());
+            } catch (Exception e) {
+                sendResponse(exchange, 500, "{\"success\":false,\"error\":\"" + e.getMessage() + "\"}");
+            }
+        });
+
+        // Update user profile
+        server.createContext("/update-user", exchange -> {
+            if ("OPTIONS".equals(exchange.getRequestMethod())) {
+                sendResponse(exchange, 204, "");
+                return;
+            }
+            if (!"POST".equals(exchange.getRequestMethod())) {
+                sendResponse(exchange, 405, "Method not allowed");
+                return;
+            }
+            try {
+                String body = readBody(exchange);
+                JSONObject data = new JSONObject(body);
+
+                String oldEmail = data.optString("oldEmail", "").trim().toLowerCase();
+                String firstName = data.optString("firstName", "").trim();
+                String lastName = data.optString("lastName", "").trim();
+                String nextEmail = data.optString("email", "").trim().toLowerCase();
+                String password = data.optString("password", "");
+                String address = data.optString("address", "").trim();
+
+                if (oldEmail.isEmpty() || nextEmail.isEmpty() || password.isEmpty()) {
+                    sendResponse(exchange, 400, "{\"success\":false,\"error\":\"Missing required fields\"}");
+                    return;
+                }
+
+                String sql = "UPDATE users SET \"firstName\" = ?, \"lastName\" = ?, email = ?, password = ?, address = ? WHERE email = ?";
+                PreparedStatement pst = conn.prepareStatement(sql);
+                pst.setString(1, firstName);
+                pst.setString(2, lastName);
+                pst.setString(3, nextEmail);
+                pst.setString(4, password);
+                pst.setString(5, address);
+                pst.setString(6, oldEmail);
+                int updated = pst.executeUpdate();
+                pst.close();
+
+                if (updated == 0) {
+                    sendResponse(exchange, 404, "{\"success\":false,\"error\":\"User not found\"}");
+                    return;
+                }
+
+                JSONObject user = new JSONObject();
+                user.put("firstName", firstName);
+                user.put("lastName", lastName);
+                user.put("email", nextEmail);
+                user.put("address", address);
+                user.put("role", "user");
+
+                JSONObject response = new JSONObject();
+                response.put("success", true);
+                response.put("user", user);
+                sendResponse(exchange, 200, response.toString());
+            } catch (SQLException e) {
+                if (isUniqueViolation(e)) {
+                    sendResponse(exchange, 400, "{\"success\":false,\"error\":\"That email is already in use\"}");
+                } else {
+                    sendResponse(exchange, 500, "{\"success\":false,\"error\":\"" + e.getMessage() + "\"}");
+                }
+            } catch (Exception e) {
+                sendResponse(exchange, 500, "{\"success\":false,\"error\":\"" + e.getMessage() + "\"}");
+            }
+        });
+
         server.setExecutor(null);
         server.start();
 
@@ -270,6 +510,10 @@ public class ForgeServer {
         System.out.println("  POST /add-admin");
         System.out.println("  POST /delete-admin");
         System.out.println("  POST /contact");
+        System.out.println("  POST /signup-user");
+        System.out.println("  POST /login-user");
+        System.out.println("  GET  /get-user?email=");
+        System.out.println("  POST /update-user");
     }
 
     static void sendResponse(HttpExchange exchange, int code, String response) throws IOException {
@@ -352,6 +596,18 @@ public class ForgeServer {
         }
         String m = msg.toLowerCase();
         return m.contains("unique") || m.contains("duplicate");
+    }
+
+    static String getQueryParam(String query, String key) {
+        if (query == null || query.isBlank()) return "";
+        String[] pairs = query.split("&");
+        for (String pair : pairs) {
+            String[] kv = pair.split("=", 2);
+            if (kv.length == 2 && kv[0].equals(key)) {
+                return java.net.URLDecoder.decode(kv[1], java.nio.charset.StandardCharsets.UTF_8);
+            }
+        }
+        return "";
     }
 
     static List<String> getAdminEmails() throws SQLException {

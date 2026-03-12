@@ -222,7 +222,10 @@
 
 	
 
+	<script src="api-config.js"></script>
 	<script>
+		const API_URL = window.FORGE_API_URL || 'http://localhost:8080';
+
 		function toggleMenu() {
 			const nav = document.getElementById('navLinks');
 			nav.classList.toggle('mobile-active');
@@ -246,8 +249,6 @@
 			}
 		}
 
-		function getUsers() { return JSON.parse(localStorage.getItem('users') || '[]'); }
-		function setUsers(users) { localStorage.setItem('users', JSON.stringify(users)); }
 		function getActiveSession() {
 			return JSON.parse(sessionStorage.getItem('sessionUser') || localStorage.getItem('sessionUser') || 'null');
 		}
@@ -297,12 +298,7 @@
 			const msg = document.getElementById('msg');
 			msg.textContent = '';
 
-			const users = getUsers();
 			const email = signupEmail.value.trim().toLowerCase();
-			if (users.some(u => u.email === email)) {
-				msg.textContent = 'An account with that email already exists.';
-				return;
-			}
 
 			const address = {
 				address1: address1.value.trim(),
@@ -316,8 +312,6 @@
 			const fullAddress = `${address.address1}${address.address2 ? `, ${address.address2}` : ''}, ${address.city}, ${address.stateProvince}, ${address.zipPostalCode}, ${address.country}`;
 
 			const user = {
-				id: `u-${Date.now()}`,
-				role: 'user',
 				firstName: firstName.value.trim(),
 				lastName: lastName.value.trim(),
 				email,
@@ -333,46 +327,65 @@
 				addressText: fullAddress,
 				addressLegacy: fullAddress
 			};
-			users.push(user);
-			setUsers(users);
 
-			await sendSignupConfirmationEmail(user);
-			msg.textContent = 'Account created. A confirmation email draft was opened for the provided email.';
-			showTab('login');
-			loginEmail.value = user.email;
+			try {
+				const response = await fetch(`${API_URL}/signup-user`, {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(user)
+				});
+				const data = await response.json();
+
+				if (!response.ok || !data.success) {
+					msg.textContent = data.error || 'Unable to create account right now.';
+					return;
+				}
+
+				await sendSignupConfirmationEmail(user);
+				msg.textContent = 'Account created. A confirmation email draft was opened for the provided email.';
+				showTab('login');
+				loginEmail.value = user.email;
+			} catch (err) {
+				msg.textContent = 'Could not connect to account service.';
+			}
 		});
 
-		document.getElementById('loginForm').addEventListener('submit', (e) => {
+		document.getElementById('loginForm').addEventListener('submit', async (e) => {
 			e.preventDefault();
 			const msg = document.getElementById('msg');
 			msg.textContent = '';
 
 			const email = loginEmail.value.trim().toLowerCase();
 			const password = loginPassword.value;
-			const user = getUsers().find(u => u.email === email && u.password === password);
 
-			if (!user) {
-				msg.textContent = 'Invalid email or password.';
-				return;
+			try {
+				const response = await fetch(`${API_URL}/login-user`, {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ email, password })
+				});
+				const data = await response.json();
+
+				if (!response.ok || !data.success) {
+					msg.textContent = data.error || 'Invalid email or password.';
+					return;
+				}
+
+				const user = data.user;
+				sessionStorage.setItem('sessionUser', JSON.stringify({
+					id: user.id,
+					role: user.role,
+					email: user.email,
+					firstName: user.firstName,
+					lastName: user.lastName
+				}));
+				localStorage.removeItem('sessionUser');
+
+				processPendingCustomBuild(user);
+				window.location.href = 'custom-builds.html';
+			} catch (err) {
+				msg.textContent = 'Could not connect to login service.';
 			}
-
-			if (user.role === 'admin') {
-				msg.textContent = 'Admin accounts must sign in on the Admin page.';
-				return;
-			}
-
-			sessionStorage.setItem('sessionUser', JSON.stringify({
-				id: user.id,
-				role: user.role,
-				email: user.email,
-				firstName: user.firstName,
-				lastName: user.lastName
-			}));
-			localStorage.removeItem('sessionUser');
-
-			processPendingCustomBuild(user);
-
-			window.location.href = 'custom-builds.html';
 		});
 	</script>
 </body>
