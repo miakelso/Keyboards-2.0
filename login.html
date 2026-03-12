@@ -6,7 +6,7 @@
 	<title>Login / Sign-Up - Forge</title>
 	<style>
 		* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-		body { background: #0a0a0a; color: #fff; min-height: 100vh; }
+		body { background: #0a0a0a; color: #fff; min-height: 100vh; display: flex; flex-direction: column; }
 		nav { width: 100%; background: #111; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
 		.logo { color: #ff6a00; text-decoration: none; font-size: 1.8rem; font-weight: 700; letter-spacing: 2px; }
 		.nav-links { display: flex; gap: 25px; }
@@ -20,7 +20,7 @@
 		}
 		.nav-links a:hover { background-color: #ff6a00; color: #000; }
 		.menu-toggle { display: none; font-size: 1.5rem; cursor: pointer; color: #fff; }
-		.shell { max-width: 980px; margin: 40px auto; padding: 0 20px; }
+		.shell { max-width: 980px; margin: 40px auto; padding: 0 20px; width: 100%; flex: 1; }
 		.auth {
 			background: linear-gradient(180deg, #1a1a1a, #151515);
 			border: 1px solid #2c2c2c;
@@ -209,6 +209,15 @@
 			</div>
 		</div>
 	</div>
+
+	<footer class="bottom-bar">
+		<a href="index.html">Home</a>
+		<a href="login.html">Login/Sign-Up</a>
+		<a href="about.html">About</a>
+		<a href="faqs.html">FAQs</a>
+		<a href="contact.html">Contact Us</a>
+		<a href="admin.html">Admin</a>
+	</footer>
 
 	
 

@@ -6,7 +6,7 @@
   <title>Contact Forge</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    body { background: #0a0a0a; color: #fff; }
+    body { background: #0a0a0a; color: #fff; min-height: 100vh; display: flex; flex-direction: column; }
 
     nav {
       width: 100%;
@@ -153,7 +153,7 @@
     <p>Send a message to the Forge team. Your submission is saved and delivered to admin emails.</p>
   </section>
 
-  <main class="wrap">
+  <main class="wrap" style="flex:1;">
     <div class="card">
       <form id="contactForm">
         <div class="grid">
@@ -179,14 +179,14 @@
     </div>
   </main>
 
-  <div class="bottom-bar">
+  <footer class="bottom-bar">
     <a href="index.html">Home</a>
     <a href="login.html">Login/Sign-Up</a>
     <a href="about.html">About</a>
     <a href="faqs.html">FAQs</a>
     <a href="contact.html">Contact Us</a>
     <a href="admin.html">Admin</a>
-  </div>
+  </footer>
 
   <script src="api-config.js"></script>
   <script>
