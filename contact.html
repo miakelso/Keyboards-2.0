@@ -196,11 +196,13 @@
     }
 
     const API_URL = window.FORGE_API_URL || 'http://localhost:8080';
+    const FORMSPREE_ENDPOINT = window.FORGE_FORMSPREE_ENDPOINT || '';
 
     document.getElementById('contactForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const msg = document.getElementById('contactMsg');
       msg.textContent = 'Sending...';
+      msg.style.color = '#d6d6d6';
 
       const payload = {
         name: document.getElementById('name').value.trim(),
@@ -210,25 +212,52 @@
       };
 
       try {
-        const res = await fetch(`${API_URL}/contact`, {
+        if (!FORMSPREE_ENDPOINT) {
+          msg.style.color = '#ff7a7a';
+          msg.textContent = 'Form service is not configured yet. Set FORGE_FORMSPREE_ENDPOINT in api-config.js.';
+          return;
+        }
+
+        const formspreeRes = await fetch(FORMSPREE_ENDPOINT, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+            name: payload.name,
+            email: payload.email,
+            subject: payload.subject,
+            message: payload.message,
+            _subject: `Forge Contact: ${payload.subject}`
+          })
         });
 
-        const data = await res.json();
-        if (!res.ok || !data.success) {
+        const formspreeData = await formspreeRes.json().catch(() => ({}));
+        if (!formspreeRes.ok) {
           msg.style.color = '#ff7a7a';
-          msg.textContent = data.error || 'Unable to send message right now.';
+          msg.textContent = formspreeData.error || 'Unable to send message right now.';
           return;
+        }
+
+        // Optional: still store contact submission in backend if available.
+        try {
+          await fetch(`${API_URL}/contact`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+        } catch (_) {
+          // Ignore backend save failures when EmailJS succeeded.
         }
 
         msg.style.color = '#83e783';
         msg.textContent = 'Message sent successfully. Our team will get back to you.';
         document.getElementById('contactForm').reset();
       } catch (error) {
+        console.error('Contact send failed:', error);
         msg.style.color = '#ff7a7a';
-        msg.textContent = 'Could not connect to support service.';
+        msg.textContent = 'Could not send message right now.';
       }
     });
   </script>
