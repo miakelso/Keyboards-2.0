@@ -24,8 +24,23 @@
     th, td { text-align:left; border-bottom:1px solid #333; padding:10px 6px; vertical-align:top; }
     select, input, textarea { width:100%; background:#121212; color:#fff; border:1px solid #333; border-radius:8px; padding:8px; }
     button.primary { background:#ff6a00; color:#000; border:none; border-radius:8px; padding:8px 12px; cursor:pointer; font-weight:700; }
+    button.secondary { background:#555; color:#fff; border:none; border-radius:8px; padding:6px 10px; cursor:pointer; font-weight:600; font-size:0.85rem; margin-right:4px; }
+    button.danger { background:#f44336; color:#fff; }
     .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:10px; }
     .small { color:#bcbcbc; font-size:0.9rem; }
+    .user-table { width:100%; border-collapse:collapse; font-size:0.9rem; }
+    .user-table th, .user-table td { border-bottom:1px solid #333; padding:10px 6px; text-align:left; }
+    .user-table th { background:#0f0f0f; font-weight:700; }
+    .user-table tr:hover { background:#0a0a0a; }
+    .modal { display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background-color:rgba(0,0,0,0.8); }
+    .modal.active { display:flex; align-items:center; justify-content:center; }
+    .modal-content { background:#1e1e1e; border:1px solid #2f2f2f; border-radius:12px; padding:24px; width:90%; max-width:500px; max-height:90vh; overflow-y:auto; }
+    .modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
+    .modal-header h2 { color:#ff6a00; margin:0; }
+    .close-btn { background:none; border:none; color:#fff; font-size:1.5rem; cursor:pointer; }
+    .form-group { margin-bottom:16px; }
+    .form-group label { display:block; margin-bottom:6px; color:#bdbdbd; }
+    .form-group input { width:100%; background:#121212; color:#fff; border:1px solid #333; border-radius:8px; padding:8px; }
     @media (max-width:768px) {
       .nav-links { display:none; }
       .nav-links.mobile-active {
@@ -146,6 +161,52 @@
       <br/>
       <div id="adminList"></div>
     </div>
+
+    <div class="panel">
+      <h2>Manage Users</h2>
+      <p class="small">View, edit, and delete user accounts. You can change passwords, emails, and delete users entirely.</p>
+      <br/>
+      <div id="usersList"></div>
+    </div>
+  </div>
+
+  <!-- User Edit Modal -->
+  <div id="userModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Edit User</h2>
+        <button class="close-btn" onclick="closeUserModal()">×</button>
+      </div>
+      <form id="userEditForm">
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="editUserEmail" readonly style="opacity:0.7;" />
+        </div>
+        <div class="form-group">
+          <label>First Name</label>
+          <input type="text" id="editUserFirstName" />
+        </div>
+        <div class="form-group">
+          <label>Last Name</label>
+          <input type="text" id="editUserLastName" />
+        </div>
+        <div class="form-group">
+          <label>New Email (leave blank to keep current)</label>
+          <input type="email" id="editUserNewEmail" placeholder="new@email.com" />
+        </div>
+        <div class="form-group">
+          <label>New Password (leave blank to keep current)</label>
+          <input type="password" id="editUserNewPassword" placeholder="••••••••" />
+        </div>
+        <div id="userEditMsg" class="small" style="margin-bottom:16px;"></div>
+        <div style="display:flex; gap:8px; justify-content:flex-end;">
+          <button type="button" class="secondary" onclick="closeUserModal()">Cancel</button>
+          <button type="submit" class="primary">Save Changes</button>
+          <button type="button" class="secondary danger" onclick="deleteUserConfirm()">Delete User</button>
+        </div>
+      </form>
+    </div>
+  </div>
   </div>
 
   <!-- Bottom Link Bar -->
@@ -410,6 +471,169 @@
     renderOrders();
     renderCatalog();
     renderAdmins();
+
+    // ========== USER MANAGEMENT FUNCTIONS ==========
+    let currentEditingUser = null;
+
+    async function getAllUsers() {
+      try {
+        const response = await fetch(`${API_URL}/get-all-users`);
+        if (!response.ok) {
+          console.error('Failed to fetch users from backend');
+          return [];
+        }
+        return await response.json();
+      } catch (error) {
+        console.error('Backend not available:', error);
+        return [];
+      }
+    }
+
+    async function renderUsers() {
+      const users = await getAllUsers();
+      
+      if (!users.length) {
+        usersList.innerHTML = '<p class="small">No users found.</p>';
+        return;
+      }
+
+      usersList.innerHTML = `
+        <table class="user-table">
+          <thead>
+            <tr>
+              <th>Email</th>
+              <th>Name</th>
+              <th>Password</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${users.map(user => `
+              <tr>
+                <td>${user.email}</td>
+                <td>${user.firstName} ${user.lastName}</td>
+                <td><code style="background:#0a0a0a; padding:2px 4px; border-radius:3px; font-size:0.85rem;">${user.password || '••••••••'}</code></td>
+                <td>
+                  <button class="secondary" onclick="openUserModal('${user.email}')">Edit</button>
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+    }
+
+    async function openUserModal(email) {
+      const users = await getAllUsers();
+      const user = users.find(u => u.email === email);
+      
+      if (!user) {
+        alert('User not found');
+        return;
+      }
+
+      currentEditingUser = user;
+      document.getElementById('editUserEmail').value = user.email;
+      document.getElementById('editUserFirstName').value = user.firstName || '';
+      document.getElementById('editUserLastName').value = user.lastName || '';
+      document.getElementById('editUserNewEmail').value = '';
+      document.getElementById('editUserNewPassword').value = '';
+      document.getElementById('userEditMsg').textContent = '';
+      
+      document.getElementById('userModal').classList.add('active');
+    }
+
+    function closeUserModal() {
+      document.getElementById('userModal').classList.remove('active');
+      currentEditingUser = null;
+    }
+
+    async function updateUser() {
+      const msgEl = document.getElementById('userEditMsg');
+      msgEl.textContent = '';
+
+      if (!currentEditingUser) return;
+
+      const firstName = document.getElementById('editUserFirstName').value.trim();
+      const lastName = document.getElementById('editUserLastName').value.trim();
+      const newEmail = document.getElementById('editUserNewEmail').value.trim().toLowerCase();
+      const newPassword = document.getElementById('editUserNewPassword').value;
+
+      try {
+        const response = await fetch(`${API_URL}/update-user`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: currentEditingUser.email,
+            firstName,
+            lastName,
+            newEmail: newEmail || undefined,
+            newPassword: newPassword || undefined
+          })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          msgEl.textContent = data.error || 'Failed to update user';
+          msgEl.style.color = '#f44336';
+          return;
+        }
+
+        msgEl.textContent = '✓ User updated successfully!';
+        msgEl.style.color = '#4CAF50';
+        setTimeout(() => {
+          closeUserModal();
+          renderUsers();
+        }, 1500);
+      } catch (error) {
+        msgEl.textContent = 'Error updating user: ' + error.message;
+        msgEl.style.color = '#f44336';
+      }
+    }
+
+    async function deleteUserConfirm() {
+      if (!currentEditingUser) return;
+      
+      if (!confirm(`Are you sure you want to delete user ${currentEditingUser.email}? This action cannot be undone.`)) {
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_URL}/delete-user`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: currentEditingUser.email })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          alert(data.error || 'Failed to delete user');
+          return;
+        }
+
+        alert(`✓ User ${currentEditingUser.email} has been deleted!`);
+        closeUserModal();
+        renderUsers();
+      } catch (error) {
+        alert('Error deleting user: ' + error.message);
+      }
+    }
+
+    document.getElementById('userEditForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      await updateUser();
+    });
+
+    // Close modal when clicking outside
+    document.getElementById('userModal').addEventListener('click', (e) => {
+      if (e.target.id === 'userModal') {
+        closeUserModal();
+      }
+    });
+
+    renderUsers();
   </script>
 </body>
 </html>
