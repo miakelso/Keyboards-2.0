@@ -501,6 +501,173 @@ public class ForgeServer {
             }
         });
 
+        // Get all users (for admin dashboard)
+        server.createContext("/get-all-users", exchange -> {
+            if ("OPTIONS".equals(exchange.getRequestMethod())) {
+                sendResponse(exchange, 204, "");
+                return;
+            }
+            if (!"GET".equals(exchange.getRequestMethod())) {
+                sendResponse(exchange, 405, "Method not allowed");
+                return;
+            }
+            try {
+                String sql = "SELECT id, \"firstName\", \"lastName\", email, password, address, role FROM users ORDER BY email";
+                Statement st = conn.createStatement();
+                ResultSet rs = st.executeQuery(sql);
+                JSONArray users = new JSONArray();
+                while (rs.next()) {
+                    JSONObject user = new JSONObject();
+                    user.put("id", rs.getString("id"));
+                    user.put("firstName", rs.getString("firstName"));
+                    user.put("lastName", rs.getString("lastName"));
+                    user.put("email", rs.getString("email"));
+                    user.put("password", rs.getString("password"));
+                    user.put("address", rs.getString("address"));
+                    user.put("role", rs.getString("role"));
+                    users.put(user);
+                }
+                rs.close();
+                st.close();
+
+                sendResponse(exchange, 200, users.toString());
+            } catch (Exception e) {
+                sendResponse(exchange, 500, "{\"error\":\"" + e.getMessage() + "\"}");
+            }
+        });
+
+        // Delete user
+        server.createContext("/delete-user", exchange -> {
+            if ("OPTIONS".equals(exchange.getRequestMethod())) {
+                sendResponse(exchange, 204, "");
+                return;
+            }
+            if (!"POST".equals(exchange.getRequestMethod())) {
+                sendResponse(exchange, 405, "Method not allowed");
+                return;
+            }
+            try {
+                String body = readBody(exchange);
+                JSONObject data = new JSONObject(body);
+                String email = data.getString("email");
+
+                String sql = "DELETE FROM users WHERE email = ?";
+                PreparedStatement pst = conn.prepareStatement(sql);
+                pst.setString(1, email);
+                int rows = pst.executeUpdate();
+                pst.close();
+
+                JSONObject response = new JSONObject();
+                if (rows > 0) {
+                    response.put("success", true);
+                    response.put("message", "User deleted successfully");
+                    sendResponse(exchange, 200, response.toString());
+                } else {
+                    response.put("success", false);
+                    response.put("error", "User not found");
+                    sendResponse(exchange, 404, response.toString());
+                }
+            } catch (Exception e) {
+                sendResponse(exchange, 500, "{\"error\":\"" + e.getMessage() + "\"}");
+            }
+        });
+
+        // Update user (admin version with flexible parameters)
+        server.createContext("/admin/update-user", exchange -> {
+            if ("OPTIONS".equals(exchange.getRequestMethod())) {
+                sendResponse(exchange, 204, "");
+                return;
+            }
+            if (!"POST".equals(exchange.getRequestMethod())) {
+                sendResponse(exchange, 405, "Method not allowed");
+                return;
+            }
+            try {
+                String body = readBody(exchange);
+                JSONObject data = new JSONObject(body);
+
+                String email = data.getString("email");
+                String firstName = data.optString("firstName", "");
+                String lastName = data.optString("lastName", "");
+                String newEmail = data.optString("newEmail", "").trim().toLowerCase();
+                String newPassword = data.optString("newPassword", "");
+
+                // Get current user first
+                String selectSql = "SELECT * FROM users WHERE email = ?";
+                PreparedStatement selectPst = conn.prepareStatement(selectSql);
+                selectPst.setString(1, email);
+                ResultSet rs = selectPst.executeQuery();
+                if (!rs.next()) {
+                    rs.close();
+                    selectPst.close();
+                    sendResponse(exchange, 404, "{\"error\":\"User not found\"}");
+                    return;
+                }
+                rs.close();
+                selectPst.close();
+
+                // Use provided values or keep existing
+                String finalFirstName = !firstName.isEmpty() ? firstName : "?";
+                String finalLastName = !lastName.isEmpty() ? lastName : "?";
+                String finalEmail = !newEmail.isEmpty() ? newEmail : email;
+                String finalPassword = !newPassword.isEmpty() ? newPassword : "?";
+
+                StringBuilder updateSql = new StringBuilder("UPDATE users SET ");
+                List<String> updates = new ArrayList<>();
+                List<String> values = new ArrayList<>();
+
+                if (!firstName.isEmpty()) {
+                    updates.add("\"firstName\" = ?");
+                    values.add(firstName);
+                }
+                if (!lastName.isEmpty()) {
+                    updates.add("\"lastName\" = ?");
+                    values.add(lastName);
+                }
+                if (!newEmail.isEmpty()) {
+                    updates.add("email = ?");
+                    values.add(newEmail);
+                }
+                if (!newPassword.isEmpty()) {
+                    updates.add("password = ?");
+                    values.add(newPassword);
+                }
+
+                if (updates.isEmpty()) {
+                    sendResponse(exchange, 400, "{\"error\":\"No fields to update\"}");
+                    return;
+                }
+
+                updateSql.append(String.join(", ", updates));
+                updateSql.append(" WHERE email = ?");
+                values.add(email);
+
+                PreparedStatement pst = conn.prepareStatement(updateSql.toString());
+                for (int i = 0; i < values.size(); i++) {
+                    pst.setString(i + 1, values.get(i));
+                }
+                int rows = pst.executeUpdate();
+                pst.close();
+
+                if (rows > 0) {
+                    JSONObject response = new JSONObject();
+                    response.put("success", true);
+                    response.put("message", "User updated successfully");
+                    sendResponse(exchange, 200, response.toString());
+                } else {
+                    sendResponse(exchange, 404, "{\"error\":\"User not found\"}");
+                }
+            } catch (SQLException e) {
+                if (isUniqueViolation(e)) {
+                    sendResponse(exchange, 400, "{\"error\":\"Email already in use\"}");
+                } else {
+                    sendResponse(exchange, 500, "{\"error\":\"" + e.getMessage() + "\"}");
+                }
+            } catch (Exception e) {
+                sendResponse(exchange, 500, "{\"error\":\"" + e.getMessage() + "\"}");
+            }
+        });
+
         server.setExecutor(null);
         server.start();
 
@@ -514,6 +681,9 @@ public class ForgeServer {
         System.out.println("  POST /login-user");
         System.out.println("  GET  /get-user?email=");
         System.out.println("  POST /update-user");
+        System.out.println("  GET  /get-all-users");
+        System.out.println("  POST /delete-user");
+        System.out.println("  POST /admin/update-user");
     }
 
     static void sendResponse(HttpExchange exchange, int code, String response) throws IOException {

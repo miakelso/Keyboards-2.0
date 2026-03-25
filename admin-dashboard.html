@@ -560,13 +560,13 @@
       const newPassword = document.getElementById('editUserNewPassword').value;
 
       try {
-        const response = await fetch(`${API_URL}/update-user`, {
+        const response = await fetch(`${API_URL}/admin/update-user`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             email: currentEditingUser.email,
-            firstName,
-            lastName,
+            firstName: firstName || undefined,
+            lastName: lastName || undefined,
             newEmail: newEmail || undefined,
             newPassword: newPassword || undefined
           })
