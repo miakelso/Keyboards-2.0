@@ -280,7 +280,7 @@ p[style] {
 .question-number,
 .preview-title,
 .spec-value {
-  color: var(--forge-soft) !important;
+  color: #e6a879 !important;
 }
 
 .preview-title {
