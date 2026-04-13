@@ -4,16 +4,17 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Build Redirect - Forge</title>
+  <link rel="stylesheet" href="theme.css" />
   <meta http-equiv="refresh" content="0; url=builder.html" />
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    body { background: #0a0a0a; color: #fff; }
-    nav { width: 100%; background: #111; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
-    .logo { color: #ff6a00; text-decoration: none; font-size: 1.8rem; font-weight: 700; letter-spacing: 2px; }
+    body { background: #222739; color: #E3D7D8; }
+    nav { width: 100%; background: #3C5F6E; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(34,39,57,0.45); }
+    .logo { color: #E6A879; text-decoration: none; font-size: 1.8rem; font-weight: 700; letter-spacing: 2px; }
     .nav-links { display: flex; gap: 25px; }
-    .nav-links a { text-decoration: none; color: #fff; font-weight: 500; padding: 8px 12px; border-radius: 6px; transition: 0.3s; }
-    .nav-links a:hover { background-color: #ff6a00; color: #000; }
-    .menu-toggle { display: none; font-size: 1.5rem; cursor: pointer; color: #fff; }
+    .nav-links a { text-decoration: none; color: #E3D7D8; font-weight: 500; padding: 8px 12px; border-radius: 6px; transition: 0.3s; }
+    .nav-links a:hover { background-color: #E6A879; color: #222739; }
+    .menu-toggle { display: none; font-size: 1.5rem; cursor: pointer; color: #E3D7D8; }
     p { padding: 20px 30px; }
     @media (max-width: 768px) {
       .nav-links { display: none; }
@@ -23,7 +24,7 @@
         position: absolute;
         top: 60px;
         right: 30px;
-        background-color: #111;
+        background-color: #3C5F6E;
         padding: 15px;
         border-radius: 8px;
       }
@@ -31,8 +32,8 @@
     }
     .bottom-bar {
       width: 100%;
-      background-color: #111;
-      border-top: 1px solid #2a2a2a;
+      background-color: #3C5F6E;
+      border-top: 1px solid #8DD6D3;
       padding: 18px 20px;
       display: flex;
       justify-content: center;
@@ -40,7 +41,7 @@
       flex-wrap: wrap;
     }
     .bottom-bar a {
-      color: #fff;
+      color: #E3D7D8;
       text-decoration: none;
       font-weight: 500;
       padding: 8px 12px;
@@ -48,14 +49,15 @@
       transition: 0.3s;
     }
     .bottom-bar a:hover {
-      background-color: #ff6a00;
-      color: #000;
+      background-color: #E6A879;
+      color: #222739;
     }
+    p { color: #E3D7D8; }
   </style>
 </head>
 <body>
   <nav>
-    <a href="index.html" class="logo">Forge</a>
+    <a href="index.html" class="logo">KeyForge</a>
     <div class="menu-toggle" onclick="toggleMenu()">☰</div>
     <div class="nav-links" id="navLinks">
       <a href="shop.html">Pre-Built Keyboards</a>

@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Forge - Mechanical Keyboards</title>
+  <link rel="stylesheet" href="theme.css">
   <style>
     * {
       margin: 0;
@@ -13,15 +14,15 @@
     }
 
     body {
-      background-color: #0a0a0a;
-      color: #fff;
+      background-color: #222739;
+      color: #E3D7D8;
       scroll-behavior: smooth;
     }
 
     /* Navbar */
     nav {
       width: 100%;
-      background-color: #111;
+      background-color: #3C5F6E;
       padding: 15px 30px;
       display: flex;
       justify-content: space-between;
@@ -29,13 +30,13 @@
       position: sticky;
       top: 0;
       z-index: 100;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+      box-shadow: 0 2px 10px rgba(34,39,57,0.45);
     }
 
     .logo {
       font-size: 1.8rem;
       font-weight: bold;
-      color: #ff6a00;
+      color: #E6A879;
       text-decoration: none;
       letter-spacing: 2px;
     }
@@ -47,7 +48,7 @@
 
     .nav-links a {
       text-decoration: none;
-      color: #fff;
+      color: #E3D7D8;
       font-weight: 500;
       padding: 8px 12px;
       border-radius: 6px;
@@ -55,8 +56,8 @@
     }
 
     .nav-links a:hover {
-      background-color: #ff6a00;
-      color: #000;
+      background-color: #E6A879;
+      color: #222739;
     }
 
     .menu-toggle {
@@ -75,7 +76,7 @@
         position: absolute;
         top: 60px;
         right: 30px;
-        background-color: #111;
+        background-color: #3C5F6E;
         padding: 15px;
         border-radius: 8px;
       }
@@ -92,16 +93,22 @@
       align-items: center;
       font-size: 6rem;
       font-weight: bold;
-      color: #ff6a00;
-      text-shadow: 2px 2px #000;
-      background-color: #1e1e1e;
+      color: #E6A879;
+      text-shadow: 2px 2px #222739;
+      background-color: #222739;
     }
 
     .hero img {
-      max-width: 80%;
-      max-height: 80%;
-      width: auto;
-      height: auto;
+      width: 100% !important;
+      height: 100% !important;
+      max-width: none;
+      max-height: none;
+      object-fit: fill;
+      border: none !important;
+      border-radius: 0 !important;
+      padding: 0 !important;
+      box-shadow: none !important;
+      background: transparent !important;
     }
 
     /* Sections for pre-built & custom */
@@ -112,7 +119,7 @@
       padding: 50px 20px;
       align-items: center;
       justify-content: center;
-      background-color: #1e1e1e;
+      background-color: #3C5F6E;
     }
 
     .card {
@@ -133,7 +140,7 @@
 
     .card:hover {
       transform: scale(1.03);
-      box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+      box-shadow: 0 15px 40px rgba(34,39,57,0.55);
     }
 
     .card-overlay {
@@ -142,17 +149,17 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0,0,0,0.4);
+      background: rgba(60,95,110,0.72);
       transition: background 0.3s;
     }
 
     .card:hover .card-overlay {
-      background: rgba(0,0,0,0.2);
+      background: rgba(60,95,110,0.58);
     }
 
     .card-content {
       position: relative;
-      color: #fff;
+      color: #E3D7D8;
       text-align: center;
       padding-bottom: 40px;
     }
@@ -166,8 +173,9 @@
     .card-content a {
       display: inline-block;
       padding: 12px 30px;
-      background-color: #ff6a00;
-      color: #000;
+      background-color: #E6A879;
+      color: #3C5F6E;
+      border: 1px solid #8DD6D3;
       font-weight: bold;
       border-radius: 10px;
       text-decoration: none;
@@ -175,14 +183,15 @@
     }
 
     .card-content a:hover {
-      background-color: #ff8a33;
+      background-color: #8DD6D3;
+      color: #3C5F6E;
     }
 
     /* Bottom Link Bar */
     .bottom-bar {
       width: 100%;
-      background-color: #111;
-      border-top: 1px solid #2a2a2a;
+      background-color: #3C5F6E;
+      border-top: 1px solid #8DD6D3;
       padding: 18px 20px;
       display: flex;
       justify-content: center;
@@ -191,7 +200,7 @@
     }
 
     .bottom-bar a {
-      color: #fff;
+      color: #E3D7D8;
       text-decoration: none;
       font-weight: 500;
       padding: 8px 12px;
@@ -200,8 +209,8 @@
     }
 
     .bottom-bar a:hover {
-      background-color: #ff6a00;
-      color: #000;
+      background-color: #E6A879;
+      color: #222739;
     }
 
     @media (max-width: 768px) {
@@ -226,7 +235,7 @@
 
   <!-- Navbar -->
   <nav>
-    <a href="index.html" class="logo">Forge</a>
+    <a href="index.html" class="logo">KeyForge</a>
     <div class="menu-toggle" onclick="toggleMenu()">☰</div>
     <div class="nav-links" id="navLinks">
       <a href="shop.html">Pre-Built Keyboards</a>
@@ -241,12 +250,12 @@
 
   <!-- Hero / Logo Section -->
   <div class="hero">
-    <img src="logo3.jpg" alt="Forge Logo">
+    <img src="KeyForge_logo.jpeg" alt="KeyForge logo">
   </div>
 
   <!-- Two main sections -->
   <div class="section-container">
-    <div class="card" style="background-image: url('images/prebuilt.jpg');">
+    <div class="card" style="background-image: url('Clicky Classic.png');">
       <div class="card-overlay"></div>
       <div class="card-content">
         <h2>Shop Pre-Built Keyboards</h2>
@@ -254,7 +263,7 @@
       </div>
     </div>
 
-    <div class="card" style="background-image: url('images/custom.jpg');">
+    <div class="card" style="background-image: url('RGB Elite.png');">
       <div class="card-overlay"></div>
       <div class="card-content">
         <h2>Create Custom Keyboards</h2>

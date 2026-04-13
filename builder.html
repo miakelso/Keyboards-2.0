@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Custom Keyboard Builder - Forge</title>
+  <link rel="stylesheet" href="theme.css">
   <style>
     * {
       margin: 0;
@@ -263,7 +264,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      background-color: #1e1e1e;
+      background-color: #162c69;
       position: sticky;
       top: 0;
       height: 100vh;
@@ -280,7 +281,7 @@
     .keyboard-preview {
       width: 100%;
       max-width: 600px;
-      background-color: #2a2a2a;
+      background-color: #556fb7;
       padding: 30px;
       border-radius: 20px;
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
@@ -572,7 +573,7 @@
 
   <!-- Navbar -->
   <nav>
-    <a href="index.html" class="logo">Forge</a>
+    <a href="index.html" class="logo">KeyForge</a>
     <div class="menu-toggle" onclick="toggleMenu()">☰</div>
     <div class="nav-links" id="navLinks">
       <a href="shop.html">Pre-Built Keyboards</a>
@@ -676,23 +677,23 @@
       <div class="specs-display">
         <div class="spec-item">
           <span class="spec-label">Usage:</span>
-          <span class="spec-value" id="specUsage">Not selected</span>
+          <span class="spec-value spec-empty" id="specUsage">Not selected</span>
         </div>
         <div class="spec-item">
           <span class="spec-label">Sound Profile:</span>
-          <span class="spec-value" id="specSound">Not selected</span>
+          <span class="spec-value spec-empty" id="specSound">Not selected</span>
         </div>
         <div class="spec-item">
           <span class="spec-label">Switch Type:</span>
-          <span class="spec-value" id="specFeel">Not selected</span>
+          <span class="spec-value spec-empty" id="specFeel">Not selected</span>
         </div>
         <div class="spec-item">
           <span class="spec-label">Size:</span>
-          <span class="spec-value" id="specSize">Not selected</span>
+          <span class="spec-value spec-empty" id="specSize">Not selected</span>
         </div>
         <div class="spec-item">
           <span class="spec-label">Style:</span>
-          <span class="spec-value" id="specStyle">Not selected</span>
+          <span class="spec-value spec-empty" id="specStyle">Not selected</span>
         </div>
       </div>
     </div>
@@ -853,6 +854,13 @@
     // Update preview
     function updatePreview() {
       const preview = document.getElementById('keyboardPreview');
+      const specFields = [
+        ['specUsage', selections.usage],
+        ['specSound', selections.sound],
+        ['specFeel', selections.feel],
+        ['specSize', selections.size],
+        ['specStyle', selections.style]
+      ];
       
       // Update size
       preview.className = 'keyboard-preview';
@@ -869,11 +877,11 @@
       }
       
       // Update specs
-      document.getElementById('specUsage').textContent = selections.usage ? formatValue(selections.usage) : 'Not selected';
-      document.getElementById('specSound').textContent = selections.sound ? formatValue(selections.sound) : 'Not selected';
-      document.getElementById('specFeel').textContent = selections.feel ? formatValue(selections.feel) : 'Not selected';
-      document.getElementById('specSize').textContent = selections.size ? formatValue(selections.size) : 'Not selected';
-      document.getElementById('specStyle').textContent = selections.style ? formatValue(selections.style) : 'Not selected';
+      specFields.forEach(([id, value]) => {
+        const element = document.getElementById(id);
+        element.textContent = value ? formatValue(value) : 'Not selected';
+        element.classList.toggle('spec-empty', !value);
+      });
     }
 
     // Format value for display

@@ -4,26 +4,28 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Custom Builds - Forge</title>
+  <link rel="stylesheet" href="theme.css" />
   <style>
     * { box-sizing:border-box; margin:0; padding:0; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    body { background:#0a0a0a; color:#fff; min-height: 100vh; display: flex; flex-direction: column; }
-    nav { background:#111; padding:15px 30px; display:flex; justify-content:space-between; align-items:center; }
-    .logo { color:#ff6a00; text-decoration:none; font-size:1.6rem; font-weight:700; letter-spacing:2px; }
+    body { background:#222739; color:#E3D7D8; min-height: 100vh; display: flex; flex-direction: column; }
+    nav { background:#3C5F6E; padding:15px 30px; display:flex; justify-content:space-between; align-items:center; box-shadow: 0 2px 10px rgba(34,39,57,0.45); }
+    .logo { color:#E6A879; text-decoration:none; font-size:1.6rem; font-weight:700; letter-spacing:2px; }
     .nav-links { display:flex; gap:12px; flex-wrap:wrap; }
-    .nav-links a, .nav-links button { color:#fff; text-decoration:none; background:#222; border:none; padding:8px 12px; border-radius:8px; cursor:pointer; }
-    .nav-links a.active { background:#ff6a00; color:#000; font-weight:700; }
-    .menu-toggle { display:none; font-size:1.5rem; cursor:pointer; color:#fff; }
+    .nav-links a, .nav-links button { color:#E3D7D8; text-decoration:none; background:#202838; border:none; padding:8px 12px; border-radius:8px; cursor:pointer; }
+    .nav-links a:hover, .nav-links button:hover { background:#E6A879; color:#222739; }
+    .nav-links a.active { background:#E6A879; color:#222739; font-weight:700; }
+    .menu-toggle { display:none; font-size:1.5rem; cursor:pointer; color:#E3D7D8; }
     .wrap { max-width:1000px; margin:30px auto; padding:0 20px; width: 100%; flex: 1; }
-    h1 { color:#ff6a00; margin-bottom:20px; }
+    h1 { color:#E6A879; margin-bottom:20px; }
     .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px; }
-    .card { background:#1e1e1e; border:1px solid #2f2f2f; border-radius:12px; padding:16px; }
-    .card h3 { color:#ff6a00; margin-bottom:8px; }
-    .line { color:#d0d0d0; margin:4px 0; }
+    .card { background:#202838; border:1px solid #8DD6D3; border-radius:12px; padding:16px; }
+    .card h3 { color:#E6A879; margin-bottom:8px; }
+    .line { color:#E3D7D8; margin:4px 0; }
     .actions { margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap; }
     .btn { border: none; border-radius: 8px; padding: 8px 10px; cursor: pointer; font-weight: 700; }
-    .btn-modify { background: #333; color: #fff; }
-    .btn-delete { background: #d32f2f; color: #fff; }
-    .btn-cart { background: #ff6a00; color: #000; }
+    .btn-modify { background: #3C5F6E; color: #E3D7D8; border: 1px solid #8DD6D3; }
+    .btn-delete { background: #3C5F6E; color: #E3D7D8; border: 1px solid #8DD6D3; }
+    .btn-cart { background: #E6A879; color: #222739; border: 1px solid #8DD6D3; }
     @media (max-width:768px) {
       .nav-links { display:none; }
       .nav-links.mobile-active {
@@ -32,7 +34,7 @@
         position:absolute;
         top:60px;
         right:30px;
-        background-color:#111;
+        background-color:#3C5F6E;
         padding:15px;
         border-radius:8px;
       }
@@ -40,8 +42,8 @@
     }
     .bottom-bar {
       width: 100%;
-      background-color: #111;
-      border-top: 1px solid #2a2a2a;
+      background-color: #3C5F6E;
+      border-top: 1px solid #8DD6D3;
       padding: 18px 20px;
       display: flex;
       justify-content: center;
@@ -49,7 +51,7 @@
       flex-wrap: wrap;
     }
     .bottom-bar a {
-      color: #fff;
+      color: #E3D7D8;
       text-decoration: none;
       font-weight: 500;
       padding: 8px 12px;
@@ -57,14 +59,15 @@
       transition: 0.3s;
     }
     .bottom-bar a:hover {
-      background-color: #ff6a00;
-      color: #000;
+      background-color: #E6A879;
+      color: #222739;
     }
+    .card a { color:#8DD6D3; }
   </style>
 </head>
 <body>
   <nav>
-    <a class="logo" href="index.html">Forge</a>
+    <a class="logo" href="index.html">KeyForge</a>
     <div class="menu-toggle" onclick="toggleMenu()">☰</div>
     <div class="nav-links" id="navLinks">
       <a class="active" href="custom-builds.html">Custom Builds</a>
@@ -108,7 +111,7 @@
     const list = document.getElementById('list');
 
     if (!builds.length) {
-      list.innerHTML = '<div class="card">No saved builds yet. Build one in <a href="builder.html" style="color:#ff6a00;">Custom Keyboards</a>.</div>';
+      list.innerHTML = '<div class="card">No saved builds yet. Build one in <a href="builder.html" style="color:#8DD6D3;">Custom Keyboards</a>.</div>';
     } else {
       list.innerHTML = builds.map((b, idx) => `
         <div class="card">

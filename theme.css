@@ -1,0 +1,410 @@
+:root {
+  --forge-bg: #181828;
+  --forge-surface: #202838;
+  --forge-soft: #3C5F6E;
+  --forge-text: #E3D7D8;
+  --forge-accent: #E6A879;
+  --forge-contrast: #181828;
+  --forge-logo-bg: #181828;
+}
+
+html, body {
+  background: var(--forge-bg) !important;
+  color: var(--forge-text) !important;
+}
+
+main,
+section,
+article,
+aside,
+header {
+  color: var(--forge-text);
+}
+
+nav,
+footer,
+.bottom-bar,
+.nav-links.mobile-active {
+  background: var(--forge-surface) !important;
+  border-color: var(--forge-soft) !important;
+}
+
+.logo,
+h1,
+h2,
+h3,
+h4,
+.hero h1,
+.card h3,
+.faq-toggle,
+.price {
+  color: var(--forge-accent) !important;
+}
+
+.logo {
+  display: inline-block !important;
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  line-height: 1.1;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-decoration: none !important;
+}
+
+.logo img {
+  display: block;
+  height: 40px;
+  width: auto;
+  max-width: 220px;
+  object-fit: contain;
+}
+
+p,
+label,
+.line,
+.hint,
+.small,
+li,
+span,
+pre,
+td,
+th,
+.msg,
+.hero p {
+  color: var(--forge-text) !important;
+}
+
+a,
+.nav-links a,
+.bottom-bar a,
+.nav-links button {
+  color: var(--forge-text) !important;
+}
+
+a:hover,
+.nav-links a:hover,
+.bottom-bar a:hover,
+.nav-links button:hover {
+  background: var(--forge-accent) !important;
+  color: var(--forge-contrast) !important;
+}
+
+.card,
+.panel,
+.stat,
+.order,
+.auth,
+.hero,
+.faq-item,
+.help-box,
+.story,
+.cta,
+.modal-content,
+.user-table th,
+.user-table tr:hover,
+pre,
+code,
+.tabs button,
+.bottom-summary,
+.builder-preview,
+.preview-section,
+.summary-card {
+  background-color: color-mix(in srgb, var(--forge-surface) 75%, var(--forge-bg) 25%) !important;
+  border-color: var(--forge-soft) !important;
+}
+
+.section-container,
+.shell,
+.wrap,
+.container,
+.content,
+.main-content {
+  background: color-mix(in srgb, var(--forge-surface) 65%, var(--forge-bg) 35%) !important;
+}
+
+.hero:has(img[src*="KeyForge_logo"]) {
+  background: var(--forge-logo-bg) !important;
+}
+
+img[src*="KeyForge_logo"] {
+  background: var(--forge-logo-bg) !important;
+  border: 1px solid var(--forge-soft) !important;
+  border-radius: 16px;
+  padding: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+input,
+textarea,
+select {
+  background: color-mix(in srgb, var(--forge-bg) 75%, var(--forge-surface) 25%) !important;
+  color: var(--forge-text) !important;
+  border-color: var(--forge-soft) !important;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--forge-accent) !important;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--forge-accent) 35%, transparent) !important;
+}
+
+button,
+.btn,
+.btn-cart,
+.btn-modify,
+.btn-delete,
+button.primary,
+button.secondary,
+button.danger,
+.submit,
+.checkout-btn,
+.add-to-cart,
+.continue-shopping {
+  background: var(--forge-accent) !important;
+  color: var(--forge-contrast) !important;
+  border-color: transparent !important;
+}
+
+a[role="button"],
+.card-content a,
+.nav-links a.active,
+.tabs button.active {
+  background: var(--forge-accent) !important;
+  color: var(--forge-contrast) !important;
+  border-color: var(--forge-soft) !important;
+}
+
+button:hover,
+.btn:hover,
+button.primary:hover,
+button.secondary:hover,
+button.danger:hover {
+  background: var(--forge-soft) !important;
+  color: var(--forge-contrast) !important;
+}
+
+hr,
+table,
+th,
+td,
+.faq-answer,
+.order,
+.card,
+.panel,
+.bottom-bar {
+  border-color: var(--forge-soft) !important;
+}
+
+a[style],
+span[style],
+p[style] {
+  color: var(--forge-accent) !important;
+}
+
+/* Force-convert legacy hardcoded palette values across all pages */
+[style*="background" i][style*="#0a0a0a" i],
+[style*="background" i][style*="#111" i],
+[style*="background" i][style*="#121212" i],
+[style*="background" i][style*="#141414" i],
+[style*="background" i][style*="#151515" i],
+[style*="background" i][style*="#161616" i],
+[style*="background" i][style*="#1a1a1a" i],
+[style*="background" i][style*="#1b1b1b" i],
+[style*="background" i][style*="#1d1d1d" i],
+[style*="background" i][style*="#1e1e1e" i],
+[style*="background" i][style*="#202020" i],
+[style*="background" i][style*="#222" i],
+[style*="background" i][style*="#2a2a2a" i],
+[style*="background" i][style*="#333" i],
+[style*="background" i][style*="#444" i],
+[style*="background" i][style*="#555" i] {
+  background: color-mix(in srgb, var(--forge-surface) 70%, var(--forge-bg) 30%) !important;
+}
+
+[style*="background" i][style*="#ff6a00" i],
+[style*="background" i][style*="#ff8a33" i] {
+  background: var(--forge-accent) !important;
+  color: var(--forge-contrast) !important;
+}
+
+[style*="color" i][style*="#ff6a00" i],
+[style*="color" i][style*="#ff8a33" i] {
+  color: var(--forge-accent) !important;
+}
+
+[style*="color" i][style*="#fff" i],
+[style*="color" i][style*="#ffffff" i],
+[style*="color" i][style*="#ccc" i],
+[style*="color" i][style*="#d0d0d0" i],
+[style*="color" i][style*="#d1d1d1" i] {
+  color: var(--forge-text) !important;
+}
+
+[style*="border" i][style*="#2a2a2a" i],
+[style*="border" i][style*="#2c2c2c" i],
+[style*="border" i][style*="#2f2f2f" i],
+[style*="border" i][style*="#333" i],
+[style*="border" i][style*="#444" i] {
+  border-color: var(--forge-soft) !important;
+}
+
+[style*="box-shadow" i][style*="rgba(0,0,0" i],
+[style*="box-shadow" i][style*="rgba(0, 0, 0" i] {
+  box-shadow: 0 8px 28px rgba(24, 24, 40, 0.45) !important;
+}
+
+/* Builder page overrides */
+.builder-container {
+  background: var(--forge-bg) !important;
+}
+
+.quiz-panel {
+  background: var(--forge-bg) !important;
+}
+
+.preview-panel {
+  background: #222739 !important;
+}
+
+.progress-bar {
+  background: var(--forge-surface) !important;
+}
+
+.progress-fill {
+  background: linear-gradient(90deg, var(--forge-soft), var(--forge-accent)) !important;
+}
+
+.question-number,
+.preview-title,
+.spec-value {
+  color: var(--forge-soft) !important;
+}
+
+.preview-title {
+  color: #8DD6D3 !important;
+}
+
+.spec-value {
+  background: #3c5f6e !important;
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+.spec-value.spec-empty {
+  color: #e6a879 !important;
+}
+
+.question-title,
+.summary-title,
+.option-card h3,
+.specs-display,
+.summary-subtitle,
+.spec-label,
+.option-card p {
+  color: var(--forge-text) !important;
+}
+
+.option-card {
+  background: color-mix(in srgb, var(--forge-surface) 70%, var(--forge-bg) 30%) !important;
+  border-color: var(--forge-soft) !important;
+  box-shadow: 0 10px 30px rgba(34,39,57,0.25) !important;
+}
+
+.option-card:hover,
+.option-card.selected {
+  border-color: var(--forge-accent) !important;
+  box-shadow: 0 10px 30px rgba(141,214,211,0.28) !important;
+}
+
+.audio-btn,
+.btn-next,
+.btn-add-cart {
+  background: var(--forge-accent) !important;
+  color: var(--forge-contrast) !important;
+  border: 1px solid var(--forge-soft) !important;
+}
+
+.audio-btn:hover,
+.btn-next:hover,
+.btn-add-cart:hover {
+  background: var(--forge-soft) !important;
+  color: var(--forge-contrast) !important;
+}
+
+.btn-back {
+  background: var(--forge-surface) !important;
+  color: var(--forge-text) !important;
+  border: 1px solid var(--forge-soft) !important;
+}
+
+.btn-back:hover {
+  background: var(--forge-accent) !important;
+  color: var(--forge-contrast) !important;
+}
+
+.keyboard-preview {
+  background: #3c5f6e !important;
+  border-color: var(--forge-soft) !important;
+  color: var(--forge-text) !important;
+}
+
+.specs-display,
+
+.specs-display {
+  background: #3c5f6e !important;
+  border-color: var(--forge-soft) !important;
+  color: var(--forge-text) !important;
+}
+.build-name-wrap input {
+  background: #6584db !important;
+  border-color: var(--forge-soft) !important;
+  color: var(--forge-text) !important;
+}
+
+.keyboard-preview .key {
+  background: linear-gradient(135deg, var(--forge-surface), var(--forge-bg)) !important;
+  border-color: var(--forge-soft) !important;
+  color: var(--forge-text) !important;
+}
+
+.keyboard-preview.minimal .key {
+  background: linear-gradient(135deg, var(--forge-text), var(--forge-soft)) !important;
+  color: var(--forge-contrast) !important;
+}
+
+.keyboard-preview.industrial .key {
+  background: linear-gradient(135deg, var(--forge-surface), var(--forge-bg)) !important;
+}
+
+.keyboard-preview.rgb .key {
+  background: linear-gradient(135deg, var(--forge-surface), var(--forge-soft), var(--forge-accent)) !important;
+}
+
+.keyboard-preview.retro .key {
+  background: linear-gradient(135deg, var(--forge-accent), var(--forge-text)) !important;
+  color: var(--forge-contrast) !important;
+}
+
+.keyboard-preview.bold .key {
+  background: linear-gradient(135deg, var(--forge-soft), var(--forge-accent)) !important;
+  color: var(--forge-contrast) !important;
+}
+
+.spec-item {
+  border-bottom-color: #ffffff !important;
+}
+
+.nav-links a.active {
+  background: var(--forge-accent) !important;
+  color: var(--forge-contrast) !important;
+}
+
+@media (max-width: 768px) {
+  .logo img {
+    height: 32px;
+  }
+}

@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Shop Pre-Built Keyboards - Forge</title>
+  <link rel="stylesheet" href="theme.css">
   <style>
     * {
       margin: 0;
@@ -13,15 +14,15 @@
     }
 
     body {
-      background-color: #0a0a0a;
-      color: #fff;
+      background-color: #222739;
+      color: #E3D7D8;
       scroll-behavior: smooth;
     }
 
     /* Navbar */
     nav {
       width: 100%;
-      background-color: #111;
+      background-color: #3C5F6E;
       padding: 15px 30px;
       display: flex;
       justify-content: space-between;
@@ -29,13 +30,13 @@
       position: sticky;
       top: 0;
       z-index: 100;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+      box-shadow: 0 2px 10px rgba(34,39,57,0.45);
     }
 
     .logo {
       font-size: 1.8rem;
       font-weight: bold;
-      color: #ff6a00;
+      color: #E6A879;
       text-decoration: none;
       letter-spacing: 2px;
     }
@@ -47,7 +48,7 @@
 
     .nav-links a {
       text-decoration: none;
-      color: #fff;
+      color: #E3D7D8;
       font-weight: 500;
       padding: 8px 12px;
       border-radius: 6px;
@@ -55,8 +56,8 @@
     }
 
     .nav-links a:hover {
-      background-color: #ff6a00;
-      color: #000;
+      background-color: #E6A879;
+      color: #222739;
     }
 
     .menu-toggle {
@@ -75,7 +76,7 @@
         position: absolute;
         top: 60px;
         right: 30px;
-        background-color: #111;
+        background-color: #3C5F6E;
         padding: 15px;
         border-radius: 8px;
       }
@@ -87,14 +88,14 @@
     /* Catalog Section */
     #catalog {
       padding: 50px 20px;
-      background-color: #1e1e1e;
+      background-color: #222739;
       min-height: 100vh;
     }
 
     #catalog h1 {
       text-align: center;
       font-size: 3rem;
-      color: #ff6a00;
+      color: #E6A879;
       margin-bottom: 50px;
     }
 
@@ -107,7 +108,8 @@
     }
 
     .keyboard-card {
-      background-color: #2a2a2a;
+      background-color: #3C5F6E;
+      border: 1px solid #8DD6D3;
       border-radius: 15px;
       overflow: hidden;
       cursor: pointer;
@@ -116,7 +118,7 @@
 
     .keyboard-card:hover {
       transform: translateY(-10px);
-      box-shadow: 0 10px 30px rgba(255, 106, 0, 0.3);
+      box-shadow: 0 15px 40px rgba(141,214,211,0.45);
     }
 
     .keyboard-card img {
@@ -131,19 +133,19 @@
 
     .keyboard-info h3 {
       font-size: 1.5rem;
-      color: #ff6a00;
+      color: #E6A879;
       margin-bottom: 10px;
     }
 
     .keyboard-info .price {
       font-size: 1.3rem;
-      color: #fff;
+      color: #E3D7D8;
       font-weight: bold;
       margin-bottom: 10px;
     }
 
     .keyboard-info .short-desc {
-      color: #ccc;
+      color: #E3D7D8;
       font-size: 0.95rem;
       line-height: 1.5;
     }
@@ -152,7 +154,7 @@
     #product-detail {
       display: none;
       padding: 50px 20px;
-      background-color: #1e1e1e;
+      background-color: #222739;
       min-height: 100vh;
     }
 
@@ -168,39 +170,42 @@
       display: inline-block;
       margin-bottom: 30px;
       padding: 10px 20px;
-      background-color: #333;
-      color: #fff;
+      background-color: #3C5F6E;
+      color: #E3D7D8;
       text-decoration: none;
       border-radius: 8px;
       transition: 0.3s;
+      border: 1px solid #8DD6D3;
     }
 
     .back-btn:hover {
-      background-color: #ff6a00;
-      color: #000;
+      background-color: #E6A879;
+      color: #222739;
     }
 
     .product-image {
       width: 100%;
       border-radius: 15px;
       object-fit: cover;
+      border: 1px solid #8DD6D3;
+      box-shadow: 0 15px 40px rgba(34,39,57,0.45);
     }
 
     .product-info h2 {
       font-size: 2.5rem;
-      color: #ff6a00;
+      color: #E6A879;
       margin-bottom: 20px;
     }
 
     .product-info .product-price {
       font-size: 2rem;
-      color: #fff;
+      color: #E3D7D8;
       font-weight: bold;
       margin-bottom: 30px;
     }
 
     .product-info .product-description {
-      color: #ccc;
+      color: #E3D7D8;
       line-height: 1.8;
       margin-bottom: 30px;
       font-size: 1.1rem;
@@ -209,18 +214,20 @@
     .add-to-cart-btn {
       display: inline-block;
       padding: 15px 40px;
-      background-color: #ff6a00;
-      color: #000;
+      background-color: #E6A879;
+      color: #222739;
       font-weight: bold;
       font-size: 1.2rem;
       border: none;
       border-radius: 10px;
       cursor: pointer;
       transition: 0.3s;
+      border: 1px solid #8DD6D3;
     }
 
     .add-to-cart-btn:hover {
-      background-color: #ff8a33;
+      background-color: #8DD6D3;
+      color: #222739;
       transform: scale(1.05);
     }
 
@@ -241,8 +248,8 @@
 
     .bottom-bar {
       width: 100%;
-      background-color: #111;
-      border-top: 1px solid #2a2a2a;
+      background-color: #3C5F6E;
+      border-top: 1px solid #8DD6D3;
       padding: 18px 20px;
       display: flex;
       justify-content: center;
@@ -250,7 +257,7 @@
       flex-wrap: wrap;
     }
     .bottom-bar a {
-      color: #fff;
+      color: #E3D7D8;
       text-decoration: none;
       font-weight: 500;
       padding: 8px 12px;
@@ -258,8 +265,8 @@
       transition: 0.3s;
     }
     .bottom-bar a:hover {
-      background-color: #ff6a00;
-      color: #000;
+      background-color: #E6A879;
+      color: #222739;
     }
   </style>
 </head>
@@ -267,7 +274,7 @@
 
   <!-- Navbar -->
   <nav>
-    <a href="index.html" class="logo">Forge</a>
+    <a href="index.html" class="logo">KeyForge</a>
     <div class="menu-toggle" onclick="toggleMenu()">☰</div>
     <div class="nav-links" id="navLinks">
       <a href="shop.html">Pre-Built Keyboards</a>
@@ -286,7 +293,7 @@
     <div class="keyboard-grid">
       <!-- Keyboard 1 -->
       <div class="keyboard-card" onclick="showProduct(1)">
-        <img src="images/keyboard1.jpg" alt="Tactile Pro">
+        <img src="Tactile Pro.png" alt="Tactile Pro">
         <div class="keyboard-info">
           <h3>Tactile Pro</h3>
           <p class="price">$149.99</p>
@@ -296,7 +303,7 @@
 
       <!-- Keyboard 2 -->
       <div class="keyboard-card" onclick="showProduct(2)">
-        <img src="images/keyboard2.jpg" alt="Silent Storm">
+        <img src="Silent Storm.png" alt="Silent Storm">
         <div class="keyboard-info">
           <h3>Silent Storm</h3>
           <p class="price">$179.99</p>
@@ -306,7 +313,7 @@
 
       <!-- Keyboard 3 -->
       <div class="keyboard-card" onclick="showProduct(3)">
-        <img src="images/keyboard3.jpg" alt="Clicky Classic">
+        <img src="Clicky Classic.png" alt="Clicky Classic">
         <div class="keyboard-info">
           <h3>Clicky Classic</h3>
           <p class="price">$129.99</p>
@@ -316,7 +323,7 @@
 
       <!-- Keyboard 4 -->
       <div class="keyboard-card" onclick="showProduct(4)">
-        <img src="images/keyboard4.jpg" alt="RGB Elite">
+        <img src="RGB Elite.png" alt="RGB Elite">
         <div class="keyboard-info">
           <h3>RGB Elite</h3>
           <p class="price">$199.99</p>
@@ -326,7 +333,7 @@
 
       <!-- Keyboard 5 -->
       <div class="keyboard-card" onclick="showProduct(5)">
-        <img src="images/keyboard5.jpg" alt="Compact 60">
+        <img src="Compact 60.jpg" alt="Compact 60">
         <div class="keyboard-info">
           <h3>Compact 60</h3>
           <p class="price">$139.99</p>
@@ -336,7 +343,7 @@
 
       <!-- Keyboard 6 -->
       <div class="keyboard-card" onclick="showProduct(6)">
-        <img src="images/keyboard6.jpg" alt="TKL Master">
+        <img src="TKL Master.jpg" alt="TKL Master">
         <div class="keyboard-info">
           <h3>TKL Master</h3>
           <p class="price">$169.99</p>
@@ -383,37 +390,37 @@
       1: {
         name: "Tactile Pro",
         price: "$149.99",
-        image: "images/keyboard1.jpg",
+        image: "Tactile Pro.png",
         description: "The Tactile Pro features premium tactile switches that provide satisfying feedback with every keystroke. Equipped with customizable RGB lighting, this keyboard is perfect for both work and gaming. The durable aluminum frame ensures longevity, while the hot-swappable switches allow for easy customization. Includes a detachable USB-C cable and comes with PBT keycaps for enhanced durability."
       },
       2: {
         name: "Silent Storm",
         price: "$179.99",
-        image: "images/keyboard2.jpg",
+        image: "Silent Storm.png",
         description: "Designed for quiet environments, the Silent Storm uses ultra-quiet linear switches that are virtually silent. Perfect for office use or late-night gaming sessions. Features sound-dampening foam, premium PBT keycaps, and a sleek minimalist design. The keyboard includes dedicated media controls and a premium wrist rest for maximum comfort during extended typing sessions."
       },
       3: {
         name: "Clicky Classic",
         price: "$129.99",
-        image: "images/keyboard3.jpg",
+        image: "Clicky Classic.png",
         description: "Experience the nostalgic feel of classic mechanical keyboards with the Clicky Classic. Featuring authentic clicky switches that provide both tactile and audible feedback, this keyboard is built with a vintage-inspired design. The steel backplate ensures durability, while the retro keycaps add a touch of classic style. Perfect for typing enthusiasts who love that satisfying click."
       },
       4: {
         name: "RGB Elite",
         price: "$199.99",
-        image: "images/keyboard4.jpg",
+        image: "RGB Elite.png",
         description: "The RGB Elite is the ultimate gaming keyboard, featuring per-key RGB lighting with millions of color combinations. Powered by high-performance gaming switches with fast actuation, this keyboard is designed for competitive gaming. Includes programmable macros, dedicated media controls, and customizable lighting profiles. The aircraft-grade aluminum frame ensures durability during intense gaming sessions."
       },
       5: {
         name: "Compact 60",
         price: "$139.99",
-        image: "images/keyboard5.jpg",
+        image: "Compact 60.jpg",
         description: "Maximize your desk space with the Compact 60, a 60% layout keyboard that doesn't compromise on functionality. Despite its compact size, it features all essential keys accessible through intuitive layers. Built with premium switches and a high-quality aluminum case, this keyboard is perfect for minimalist setups. Includes RGB underglow lighting and comes in multiple color options."
       },
       6: {
         name: "TKL Master",
         price: "$169.99",
-        image: "images/keyboard6.jpg",
+        image: "TKL Master.jpg",
         description: "The TKL Master offers the perfect balance between functionality and space-saving design. This tenkeyless keyboard removes the numpad to give you more mouse space while retaining all essential keys. Features premium tactile switches, customizable RGB backlighting, and a solid aluminum chassis. Includes a braided USB cable, PBT keycaps, and full programmability for advanced users."
       }
     };
