@@ -270,6 +270,26 @@
       height: 100vh;
     }
 
+    .preview-panel.theme-minimal {
+      background: linear-gradient(180deg, #3a4d72, #253253);
+    }
+
+    .preview-panel.theme-industrial {
+      background: linear-gradient(180deg, #1a1f28, #11151c);
+    }
+
+    .preview-panel.theme-rgb {
+      background: linear-gradient(180deg, #261d52, #1b1440);
+    }
+
+    .preview-panel.theme-retro {
+      background: linear-gradient(180deg, #5d4a2f, #40311f);
+    }
+
+    .preview-panel.theme-bold {
+      background: linear-gradient(180deg, #2f1454, #1d0d35);
+    }
+
     .preview-title {
       font-size: 1.5rem;
       color: #ff6a00;
@@ -279,52 +299,184 @@
 
     /* Keyboard Preview - CSS Keyboard */
     .keyboard-preview {
-      width: 100%;
-      max-width: 600px;
+      --key-scale: 1;
+      width: fit-content;
+      max-width: 100%;
       background-color: #556fb7;
-      padding: 30px;
+      padding: 4px;
       border-radius: 20px;
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
       transition: all 0.5s ease;
+      overflow-x: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      margin: 0 auto;
     }
 
     .keyboard-row {
       display: flex;
-      gap: 8px;
-      margin-bottom: 8px;
-      justify-content: center;
+      gap: 0;
+      margin-bottom: calc(8px * var(--key-scale));
+      justify-content: space-between;
+      width: 100%;
+      min-width: max-content;
     }
 
     .key {
       background: linear-gradient(135deg, #3a3a3a, #2a2a2a);
       border: 1px solid #444;
       border-radius: 4px;
-      width: 45px;
-      height: 45px;
+      min-width: calc(48px * var(--key-scale));
+      height: calc(48px * var(--key-scale));
+      padding: 0 calc(9px * var(--key-scale));
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.8rem;
+      font-size: calc(0.92rem * var(--key-scale));
+      font-weight: 600;
       color: #aaa;
       transition: all 0.3s ease;
       box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+      white-space: nowrap;
     }
 
-    .key.wide { width: 70px; }
-    .key.wider { width: 95px; }
-    .key.space { width: 200px; }
+    .key.small {
+      min-width: calc(44px * var(--key-scale));
+      height: calc(36px * var(--key-scale));
+      font-size: calc(0.70rem * var(--key-scale));
+      font-weight: 700;
+      text-transform: lowercase;
+    }
+
+    .key.tiny {
+      min-width: calc(54px * var(--key-scale));
+      height: calc(28px * var(--key-scale));
+      font-size: calc(0.75rem * var(--key-scale));
+      font-weight: 600;
+      text-transform: none;
+      padding: 0 calc(8px * var(--key-scale));
+    }
+
+    .keyboard-row.top-row .key.tiny {
+      min-width: calc(52px * var(--key-scale));
+      height: calc(26px * var(--key-scale));
+      font-size: calc(0.72rem * var(--key-scale));
+      padding: 0 calc(7px * var(--key-scale));
+    }
+
+    .keyboard-row.top-row .key.right-edge {
+      margin-left: 0;
+    }
+
+    .keyboard-row.fifth-row .key.shift-fill {
+      min-width: calc(50px * var(--key-scale));
+      height: calc(50px * var(--key-scale));
+      font-size: calc(0.95rem * var(--key-scale));
+    }
+
+    .keyboard-row.fifth-row .key.right-edge {
+      margin-left: 0;
+    }
+
+    .key.u125 { min-width: calc(62px * var(--key-scale)); }
+    .key.u150 { min-width: calc(72px * var(--key-scale)); }
+    .key.u175 { min-width: calc(84px * var(--key-scale)); }
+    .key.u200 { min-width: calc(98px * var(--key-scale)); }
+    .key.u225 { min-width: calc(106px * var(--key-scale)); }
+    .key.u260 { min-width: calc(122px * var(--key-scale)); }
+    .key.u275 { min-width: calc(132px * var(--key-scale)); }
+    .key.u290 { min-width: calc(139px * var(--key-scale)); }
+    .key.u325 { min-width: calc(156px * var(--key-scale)); }
+    .key.space { min-width: calc(300px * var(--key-scale)); }
+
+    .key.label-left {
+      justify-content: flex-start;
+      padding-left: calc(12px * var(--key-scale));
+    }
+
+    .key.right-edge {
+      margin-left: 0;
+    }
+
+    .key-gap {
+      width: calc(14px * var(--key-scale));
+      flex: 0 0 calc(14px * var(--key-scale));
+    }
+
+    .key-gap-sm {
+      width: calc(3px * var(--key-scale));
+      flex: 0 0 calc(3px * var(--key-scale));
+    }
+
+    .row-spacer {
+      flex: 1 1 auto;
+      min-width: 8px;
+    }
+
+    .row-spacer-tight {
+      flex: 0 0 calc(16px * var(--key-scale));
+    }
+
+    .key.shift-fill {
+      margin-right: calc(4px * var(--key-scale));
+    }
+
+    .arrow-cluster {
+      display: flex;
+      align-items: flex-end;
+      gap: calc(6px * var(--key-scale));
+    }
+
+    .arrow-cluster.right-edge {
+      margin-left: 0;
+    }
+
+    .arrow-stack {
+      display: flex;
+      flex-direction: column;
+      gap: calc(6px * var(--key-scale));
+    }
+
+    .key.arrow-half {
+      min-width: calc(62px * var(--key-scale));
+      height: calc(21px * var(--key-scale));
+      font-size: calc(0.74rem * var(--key-scale));
+      line-height: 1;
+      padding: 0;
+    }
+
+    .key.nav-half {
+      min-width: calc(52px * var(--key-scale));
+      height: calc(21px * var(--key-scale));
+      font-size: calc(0.66rem * var(--key-scale));
+      line-height: 1;
+      padding: 0;
+    }
 
     /* Keyboard Themes */
+    .keyboard-preview.minimal {
+      background: linear-gradient(135deg, #cfd8e3, #aebccc) !important;
+    }
+
     .keyboard-preview.minimal .key {
       background: linear-gradient(135deg, #f0f0f0, #e0e0e0);
       color: #333;
       border-color: #ccc;
     }
 
+    .keyboard-preview.industrial {
+      background: linear-gradient(135deg, #1f242b, #0f1318) !important;
+    }
+
     .keyboard-preview.industrial .key {
       background: linear-gradient(135deg, #4a4a4a, #3a3a3a);
       color: #ddd;
       border-color: #555;
+    }
+
+    .keyboard-preview.rgb {
+      background: linear-gradient(135deg, #0b1230, #111b4d) !important;
     }
 
     .keyboard-preview.rgb .key {
@@ -339,11 +491,19 @@
       50% { box-shadow: 0 0 20px rgba(121, 40, 202, 0.8); }
     }
 
+    .keyboard-preview.retro {
+      background: linear-gradient(135deg, #9a845e, #6e5a3a) !important;
+    }
+
     .keyboard-preview.retro .key {
       background: linear-gradient(135deg, #f4e4c1, #d4af37);
       color: #5a4a2a;
       border-color: #d4af37;
       border-radius: 8px;
+    }
+
+    .keyboard-preview.bold {
+      background: linear-gradient(135deg, #2b0f54, #4e1f7a) !important;
     }
 
     .keyboard-preview.bold .key {
@@ -354,10 +514,10 @@
     }
 
     /* Size Variations */
-    .keyboard-preview.full { max-width: 600px; }
-    .keyboard-preview.tkl { max-width: 500px; }
-    .keyboard-preview.compact75 { max-width: 450px; }
-    .keyboard-preview.compact65 { max-width: 400px; }
+    .keyboard-preview.full { max-width: 100%; --key-scale: 1; }
+    .keyboard-preview.tkl { max-width: 100%; --key-scale: 0.88; }
+    .keyboard-preview.compact75 { max-width: 100%; --key-scale: 0.78; }
+    .keyboard-preview.compact65 { max-width: 100%; --key-scale: 0.68; }
 
     /* Specs Display */
     .specs-display {
@@ -531,18 +691,91 @@
       }
 
       .keyboard-row {
-        gap: 4px;
+        gap: 0;
       }
 
       .key {
-        width: 35px;
-        height: 35px;
-        font-size: 0.7rem;
+        min-width: calc(32px * var(--key-scale));
+        height: calc(32px * var(--key-scale));
+        font-size: calc(0.66rem * var(--key-scale));
+        padding: 0 calc(5px * var(--key-scale));
       }
 
-      .key.wide { width: 55px; }
-      .key.wider { width: 75px; }
-      .key.space { width: 150px; }
+      .key.small {
+        min-width: calc(30px * var(--key-scale));
+        height: calc(26px * var(--key-scale));
+        font-size: calc(0.53rem * var(--key-scale));
+      }
+
+      .key.tiny {
+        min-width: calc(36px * var(--key-scale));
+        height: calc(22px * var(--key-scale));
+        font-size: calc(0.56rem * var(--key-scale));
+        padding: 0 calc(5px * var(--key-scale));
+      }
+
+      .keyboard-row.top-row .key.tiny {
+        min-width: calc(35px * var(--key-scale));
+        height: calc(20px * var(--key-scale));
+        font-size: calc(0.53rem * var(--key-scale));
+        padding: 0 calc(4px * var(--key-scale));
+      }
+
+      .keyboard-row.fifth-row .key.shift-fill {
+        min-width: calc(34px * var(--key-scale));
+        height: calc(34px * var(--key-scale));
+        font-size: calc(0.70rem * var(--key-scale));
+      }
+
+      .key.u125 { min-width: calc(40px * var(--key-scale)); }
+      .key.u150 { min-width: calc(46px * var(--key-scale)); }
+      .key.u175 { min-width: calc(54px * var(--key-scale)); }
+      .key.u200 { min-width: calc(62px * var(--key-scale)); }
+      .key.u225 { min-width: calc(70px * var(--key-scale)); }
+      .key.u260 { min-width: calc(78px * var(--key-scale)); }
+      .key.u275 { min-width: calc(86px * var(--key-scale)); }
+      .key.u290 { min-width: calc(90px * var(--key-scale)); }
+      .key.u325 { min-width: calc(100px * var(--key-scale)); }
+      .key.space { min-width: calc(150px * var(--key-scale)); }
+
+      .key-gap {
+        width: calc(8px * var(--key-scale));
+        flex: 0 0 calc(8px * var(--key-scale));
+      }
+
+      .key-gap-sm {
+        width: calc(2px * var(--key-scale));
+        flex: 0 0 calc(2px * var(--key-scale));
+      }
+
+      .row-spacer {
+        min-width: 4px;
+      }
+
+      .row-spacer-tight {
+        flex-basis: calc(8px * var(--key-scale));
+      }
+
+      .key.shift-fill {
+        margin-right: calc(2px * var(--key-scale));
+      }
+
+      .arrow-cluster,
+      .arrow-stack {
+        gap: 4px;
+      }
+
+      .key.arrow-half {
+        min-width: calc(46px * var(--key-scale));
+        height: calc(14px * var(--key-scale));
+        font-size: calc(0.52rem * var(--key-scale));
+      }
+
+      .key.nav-half {
+        min-width: calc(40px * var(--key-scale));
+        height: calc(14px * var(--key-scale));
+        font-size: calc(0.48rem * var(--key-scale));
+      }
     }
 
     .bottom-bar {
@@ -636,7 +869,42 @@
       
       <!-- Keyboard Preview -->
       <div class="keyboard-preview" id="keyboardPreview">
+        <div class="keyboard-row top-row">
+          <div class="key tiny u125">Esc</div>
+          <div class="key tiny">F1</div>
+          <div class="key tiny">F2</div>
+          <div class="key tiny">F3</div>
+          <div class="key tiny">F4</div>
+          <div class="key tiny">F5</div>
+          <div class="key tiny">F6</div>
+          <div class="key tiny">F7</div>
+          <div class="key tiny">F8</div>
+          <div class="key tiny">F9</div>
+          <div class="key tiny">F10</div>
+          <div class="key tiny">F11</div>
+          <div class="key tiny">F12</div>
+          <div class="key tiny u125 right-edge">Delete</div>
+        </div>
+
         <div class="keyboard-row">
+          <div class="key u125">~</div>
+          <div class="key">1</div>
+          <div class="key">2</div>
+          <div class="key">3</div>
+          <div class="key">4</div>
+          <div class="key">5</div>
+          <div class="key">6</div>
+          <div class="key">7</div>
+          <div class="key">8</div>
+          <div class="key">9</div>
+          <div class="key">0</div>
+          <div class="key">−</div>
+          <div class="key">=</div>
+          <div class="key u225 label-left right-edge">Backspace</div>
+        </div>
+
+        <div class="keyboard-row">
+          <div class="key u225 label-left">Tab</div>
           <div class="key">Q</div>
           <div class="key">W</div>
           <div class="key">E</div>
@@ -647,8 +915,13 @@
           <div class="key">I</div>
           <div class="key">O</div>
           <div class="key">P</div>
+          <div class="key">{</div>
+          <div class="key">}</div>
+          <div class="key u150 right-edge">\</div>
         </div>
+
         <div class="keyboard-row">
+          <div class="key u260 label-left">Caps Lock</div>
           <div class="key">A</div>
           <div class="key">S</div>
           <div class="key">D</div>
@@ -658,18 +931,43 @@
           <div class="key">J</div>
           <div class="key">K</div>
           <div class="key">L</div>
+          <div class="key">;</div>
+          <div class="key">"</div>
+          <div class="key u225 label-left right-edge">↵Enter</div>
         </div>
-        <div class="keyboard-row">
-          <div class="key">Z</div>
-          <div class="key">X</div>
-          <div class="key">C</div>
-          <div class="key">V</div>
-          <div class="key">B</div>
-          <div class="key">N</div>
-          <div class="key">M</div>
+
+        <div class="keyboard-row fifth-row">
+          <div class="key u260 label-left">⇧Shift</div>
+          <div class="key shift-fill">Z</div>
+          <div class="key shift-fill">X</div>
+          <div class="key shift-fill">C</div>
+          <div class="key shift-fill">V</div>
+          <div class="key shift-fill">B</div>
+          <div class="key shift-fill">N</div>
+          <div class="key shift-fill">M</div>
+          <div class="key shift-fill">&lt;</div>
+          <div class="key shift-fill">&gt;</div>
+          <div class="key shift-fill">?</div>
+          <div class="key u260 label-left right-edge">⇧Shift</div>
         </div>
+
         <div class="keyboard-row">
-          <div class="key space">Space</div>
+          <div class="key">Ctrl</div>
+          <div class="key">Fn</div>
+          <div class="key">▢</div>
+          <div class="key u125">Alt</div>
+          <div class="key space"></div>
+          <div class="key u125">Alt</div>
+          <div class="key">Ctrl</div>
+          <div class="key-gap-sm"></div>
+          <div class="arrow-cluster right-edge">
+            <div class="key nav-half">←Home</div>
+            <div class="arrow-stack">
+              <div class="key nav-half">↑PgUp</div>
+              <div class="key nav-half">↓PgDn</div>
+            </div>
+            <div class="key nav-half">→End</div>
+          </div>
         </div>
       </div>
 
@@ -854,6 +1152,8 @@
     // Update preview
     function updatePreview() {
       const preview = document.getElementById('keyboardPreview');
+      const previewPanel = document.querySelector('.preview-panel');
+      const panelThemeClasses = ['theme-minimal', 'theme-industrial', 'theme-rgb', 'theme-retro', 'theme-bold'];
       const specFields = [
         ['specUsage', selections.usage],
         ['specSound', selections.sound],
@@ -874,6 +1174,16 @@
       // Update style
       if (selections.style) {
         preview.classList.add(selections.style);
+      }
+
+      // Ensure stale inline values never block theme class backgrounds
+      preview.style.background = '';
+      previewPanel.style.background = '';
+
+      // Update preview panel theme class
+      previewPanel.classList.remove(...panelThemeClasses);
+      if (selections.style) {
+        previewPanel.classList.add(`theme-${selections.style}`);
       }
       
       // Update specs
