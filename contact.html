@@ -62,14 +62,23 @@
     .hero h1 { color: var(--forge-accent); font-size: clamp(2rem, 5vw, 3rem); margin-bottom: 10px; }
     .hero p { color: var(--forge-text); max-width: 760px; margin: 0 auto; line-height: 1.7; }
 
-    .wrap { max-width: 850px; margin: 0 auto; padding: 32px 20px 60px; }
+    .wrap {
+      width: 100%;
+      max-width: none;
+      margin: 0;
+      padding: 26px 36px 36px;
+      display: flex;
+      flex: 1;
+    }
 
     .card {
       background: linear-gradient(180deg, #273249 0%, #202838 100%);
       border: 1px solid var(--forge-soft);
       border-radius: 14px;
-      padding: 22px;
+      padding: 30px;
       box-shadow: 0 10px 30px rgba(34, 39, 57, 0.25);
+      width: 100%;
+      min-height: 100%;
     }
 
     .grid {

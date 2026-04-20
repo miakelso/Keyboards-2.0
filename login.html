@@ -54,18 +54,39 @@
 		.hero p { color: var(--forge-text); line-height: 1.5; }
 		.panel { padding: 28px; }
 		.tabs { display: flex; gap: 10px; margin-bottom: 20px; }
-		.tabs button {
-			background: #1f283b;
-			border: 1px solid var(--forge-soft);
-			color: var(--forge-text);
+		#tabLogin,
+		#tabSignup {
+			background: #3c5f6e !important;
+			border: 1px solid #3c5f6e !important;
+			color: var(--forge-text) !important;
 			padding: 10px 14px;
 			border-radius: 10px;
 			cursor: pointer;
 			font-weight: 600;
+			flex: 1;
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			box-shadow: 0 4px 14px rgba(34, 39, 57, 0.18);
+			min-width: 0;
 		}
-		.tabs button.active { background: var(--forge-accent); color: var(--forge-contrast); border-color: var(--forge-soft); }
+
+		#tabLogin.active,
+		#tabSignup.active {
+			background: #e6a879 !important;
+			color: var(--forge-contrast) !important;
+			border-color: #3c5f6e !important;
+		}
+
+		#tabLogin:hover,
+		#tabSignup:hover {
+			background: #3c5f6e !important;
+			color: var(--forge-text) !important;
+		}
+
 		form { display: none; }
 		form.active { display: block; }
+
 		.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 		.full { grid-column: span 2; }
 		label { font-size: 0.9rem; color: var(--forge-text); }
