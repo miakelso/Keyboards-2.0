@@ -209,6 +209,48 @@
       </form>
     </div>
   </div>
+
+  <!-- Product Edit Modal -->
+  <div id="productModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Edit Pre-Built Keyboard</h2>
+        <button class="close-btn" onclick="closeProductModal()">×</button>
+      </div>
+      <form id="productEditForm">
+        <div class="form-group">
+          <label>Product ID</label>
+          <input type="text" id="editPid" required />
+        </div>
+        <div class="form-group">
+          <label>Name</label>
+          <input type="text" id="editPname" required />
+        </div>
+        <div class="form-group">
+          <label>Price</label>
+          <input type="text" id="editPprice" required />
+        </div>
+        <div class="form-group">
+          <label>Image Path</label>
+          <input type="text" id="editPimage" required />
+        </div>
+        <div class="form-group">
+          <label>Short Description</label>
+          <input type="text" id="editPshort" required />
+        </div>
+        <div class="form-group">
+          <label>Full Description</label>
+          <textarea id="editPdesc" required></textarea>
+        </div>
+        <div id="productEditMsg" class="small" style="margin-bottom:16px;"></div>
+        <div style="display:flex; gap:8px; justify-content:flex-end;">
+          <button type="button" class="secondary" onclick="closeProductModal()">Cancel</button>
+          <button type="submit" class="primary">Save Changes</button>
+          <button type="button" class="secondary danger" onclick="deleteProductFromModal()">Delete Product</button>
+        </div>
+      </form>
+    </div>
+  </div>
   </div>
 
   <!-- Bottom Link Bar -->
@@ -359,14 +401,38 @@
 
     function renderCatalog(){
       const list = getCatalog();
-      catalogList.innerHTML = list.map((p, i) => `
-        <div style="border-top:1px solid #333; padding:8px 0; display:flex; justify-content:space-between; gap:8px;">
-          <div>
-            <strong>${p.name}</strong> (${p.price})<br/><span class="small">${p.id} • ${p.shortDesc}</span>
-          </div>
-          <button class="primary" onclick="removeProduct(${i})">Remove</button>
-        </div>
-      `).join('');
+      if (!list.length) {
+        catalogList.innerHTML = '<p class="small">No pre-built products found.</p>';
+        return;
+      }
+
+      catalogList.innerHTML = `
+        <table class="user-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Price</th>
+              <th>Short Description</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${list.map((p, i) => `
+              <tr>
+                <td>${p.id}</td>
+                <td>${p.name}</td>
+                <td>${p.price}</td>
+                <td>${p.shortDesc}</td>
+                <td>
+                  <button class="secondary" onclick="openProductModal(${i})">Edit</button>
+                  <button class="secondary danger" onclick="removeProduct(${i})">Remove</button>
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
     }
 
     function removeProduct(index){
@@ -374,6 +440,85 @@
       list.splice(index, 1);
       setCatalog(list);
       renderCatalog();
+    }
+
+    let currentEditingProductIndex = null;
+
+    function openProductModal(index) {
+      const list = getCatalog();
+      const product = list[index];
+      if (!product) {
+        alert('Product not found');
+        return;
+      }
+
+      currentEditingProductIndex = index;
+      document.getElementById('editPid').value = product.id || '';
+      document.getElementById('editPname').value = product.name || '';
+      document.getElementById('editPprice').value = product.price || '';
+      document.getElementById('editPimage').value = product.image || '';
+      document.getElementById('editPshort').value = product.shortDesc || '';
+      document.getElementById('editPdesc').value = product.description || '';
+      document.getElementById('productEditMsg').textContent = '';
+
+      document.getElementById('productModal').classList.add('active');
+    }
+
+    function closeProductModal() {
+      document.getElementById('productModal').classList.remove('active');
+      currentEditingProductIndex = null;
+    }
+
+    function updateProductFromModal() {
+      const msgEl = document.getElementById('productEditMsg');
+      msgEl.textContent = '';
+
+      if (currentEditingProductIndex === null) return;
+
+      const list = getCatalog();
+      const id = document.getElementById('editPid').value.trim();
+      const name = document.getElementById('editPname').value.trim();
+      const price = document.getElementById('editPprice').value.trim();
+      const image = document.getElementById('editPimage').value.trim();
+      const shortDesc = document.getElementById('editPshort').value.trim();
+      const description = document.getElementById('editPdesc').value.trim();
+
+      if (!id || !name || !price || !image || !shortDesc || !description) {
+        msgEl.textContent = 'All fields are required.';
+        msgEl.style.color = '#f44336';
+        return;
+      }
+
+      const duplicateIndex = list.findIndex((p, i) => p.id === id && i !== currentEditingProductIndex);
+      if (duplicateIndex >= 0) {
+        msgEl.textContent = 'A different product already uses this ID.';
+        msgEl.style.color = '#f44336';
+        return;
+      }
+
+      list[currentEditingProductIndex] = { id, name, price, image, shortDesc, description };
+      setCatalog(list);
+      renderCatalog();
+
+      msgEl.textContent = '✓ Product updated successfully!';
+      msgEl.style.color = '#4CAF50';
+      setTimeout(() => {
+        closeProductModal();
+      }, 800);
+    }
+
+    function deleteProductFromModal() {
+      if (currentEditingProductIndex === null) return;
+      const list = getCatalog();
+      const product = list[currentEditingProductIndex];
+      if (!product) return;
+
+      if (!confirm(`Delete product ${product.name}?`)) return;
+
+      list.splice(currentEditingProductIndex, 1);
+      setCatalog(list);
+      renderCatalog();
+      closeProductModal();
     }
 
     async function renderAdmins() {
@@ -628,10 +773,21 @@
       await updateUser();
     });
 
+    document.getElementById('productEditForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      updateProductFromModal();
+    });
+
     // Close modal when clicking outside
     document.getElementById('userModal').addEventListener('click', (e) => {
       if (e.target.id === 'userModal') {
         closeUserModal();
+      }
+    });
+
+    document.getElementById('productModal').addEventListener('click', (e) => {
+      if (e.target.id === 'productModal') {
+        closeProductModal();
       }
     });
 
