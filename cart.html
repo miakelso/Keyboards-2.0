@@ -109,6 +109,13 @@
       margin: 0 auto;
     }
 
+    .cart-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 400px;
+      gap: 24px;
+      align-items: start;
+    }
+
     .cart-container h1 {
       font-size: 3rem;
       color: var(--forge-accent);
@@ -237,8 +244,7 @@
       border: 1px solid var(--forge-soft);
       border-radius: 15px;
       padding: 30px;
-      max-width: 400px;
-      margin-left: auto;
+      width: 100%;
     }
 
     .cart-summary h2 {
@@ -298,6 +304,10 @@
     }
 
     @media (max-width: 768px) {
+      .cart-layout {
+        grid-template-columns: 1fr;
+      }
+
       .cart-item {
         grid-template-columns: 1fr;
         gap: 15px;
@@ -427,7 +437,7 @@
         return;
       }
 
-      let cartHTML = '<div class="cart-items">';
+      let cartHTML = '<div class="cart-layout"><div class="cart-items">';
       
       cart.forEach((item, index) => {
         cartHTML += `
@@ -473,6 +483,8 @@
           <button class="clear-cart-btn" onclick="clearCart()">Clear Cart</button>
         </div>
       `;
+
+      cartHTML += '</div>';
 
       cartContent.innerHTML = cartHTML;
     }
