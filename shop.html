@@ -465,10 +465,24 @@
     }
 
     function normalizeCatalog(catalog) {
-      return catalog.map((p) => ({
-        ...p,
-        image: normalizeImagePath(p.image, p)
-      }));
+      const defaultsById = Object.fromEntries(defaultCatalog.map((p) => [p.id, p]));
+      const defaultsByName = Object.fromEntries(defaultCatalog.map((p) => [String(p.name || '').toLowerCase(), p]));
+
+      return catalog.map((p, idx) => {
+        const base =
+          (p && p.id && defaultsById[p.id]) ||
+          (p && p.name && defaultsByName[String(p.name).toLowerCase()]) ||
+          defaultCatalog[idx] ||
+          {};
+
+        const merged = { ...base, ...p };
+        return {
+          ...merged,
+          shortDesc: merged.shortDesc || base.shortDesc || '',
+          description: merged.description || merged.desc || base.description || merged.shortDesc || base.shortDesc || 'No description available.',
+          image: normalizeImagePath(merged.image || base.image, merged)
+        };
+      });
     }
 
     function getCatalog() {
@@ -521,12 +535,13 @@
 
     function showProduct(id) {
       const product = keyboards[id];
+      if (!product) return;
       currentProduct = product; // Store current product for cart
       document.getElementById('detail-name').textContent = product.name;
       document.getElementById('detail-price').textContent = product.price;
       document.getElementById('detail-image').src = product.image;
       document.getElementById('detail-image').alt = product.name;
-      document.getElementById('detail-description').textContent = product.description;
+      document.getElementById('detail-description').textContent = product.description || product.shortDesc || 'No description available.';
       
       document.getElementById('catalog').style.display = 'none';
       document.getElementById('product-detail').style.display = 'block';
