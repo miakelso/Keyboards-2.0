@@ -439,10 +439,46 @@
 
     let keyboards = {};
 
+    const legacyImageMap = {
+      'images/keyboard1.jpg': 'Tactile Pro.png',
+      'images/keyboard2.jpg': 'Silent Storm.png',
+      'images/keyboard3.jpg': 'Clicky Classic.png',
+      'images/keyboard4.jpg': 'RGB Elite.png',
+      'images/keyboard5.jpg': 'Compact 60.jpg',
+      'images/keyboard6.jpg': 'TKL Master.jpg'
+    };
+
+    function normalizeImagePath(imagePath, product = {}) {
+      const raw = (imagePath || '').trim();
+      const mapped = legacyImageMap[raw] || raw;
+      if (mapped) return mapped;
+
+      const idMap = {
+        'kb-001': 'Tactile Pro.png',
+        'kb-002': 'Silent Storm.png',
+        'kb-003': 'Clicky Classic.png',
+        'kb-004': 'RGB Elite.png',
+        'kb-005': 'Compact 60.jpg',
+        'kb-006': 'TKL Master.jpg'
+      };
+      return idMap[product.id] || 'Tactile Pro.png';
+    }
+
+    function normalizeCatalog(catalog) {
+      return catalog.map((p) => ({
+        ...p,
+        image: normalizeImagePath(p.image, p)
+      }));
+    }
+
     function getCatalog() {
       const saved = JSON.parse(localStorage.getItem('prebuiltCatalog') || 'null');
-      if (Array.isArray(saved) && saved.length) return saved;
-      return defaultCatalog;
+      if (Array.isArray(saved) && saved.length) {
+        const normalizedSaved = normalizeCatalog(saved);
+        localStorage.setItem('prebuiltCatalog', JSON.stringify(normalizedSaved));
+        return normalizedSaved;
+      }
+      return normalizeCatalog(defaultCatalog);
     }
 
     function hydrateCatalogForShop(catalog) {
