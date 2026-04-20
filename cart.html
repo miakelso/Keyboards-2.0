@@ -153,7 +153,7 @@
 
     .cart-item {
       display: grid;
-      grid-template-columns: 100px 1fr 150px 100px 50px;
+      grid-template-columns: 1fr 150px 100px 50px;
       gap: 20px;
       align-items: center;
       padding: 20px;
@@ -299,14 +299,14 @@
 
     @media (max-width: 768px) {
       .cart-item {
-        grid-template-columns: 80px 1fr;
+        grid-template-columns: 1fr;
         gap: 15px;
       }
 
       .item-price,
       .quantity-controls,
       .remove-btn {
-        grid-column: 2;
+        grid-column: 1;
       }
 
       .cart-container h1 {
@@ -432,7 +432,6 @@
       cart.forEach((item, index) => {
         cartHTML += `
           <div class="cart-item">
-            <img src="${item.image}" alt="${item.name}">
             <div class="item-details">
               <h3>${item.name}</h3>
               <p>Mechanical Keyboard</p>
