@@ -18,7 +18,7 @@ public class ForgeServer {
 
     public static void main(String[] args) throws Exception {
 
-        // 1️⃣ Connect to Postgres (Render) if DATABASE_URL is set, otherwise SQLite
+        // 1️⃣ Connect to the configured Postgres database
         conn = connectDatabase();
 
         Statement stmt = conn.createStatement();
@@ -709,14 +709,14 @@ public class ForgeServer {
     }
 
     static Connection connectDatabase() throws Exception {
-        String databaseUrl = System.getenv("DATABASE_URL");
-        if (databaseUrl != null && !databaseUrl.isBlank()) {
-            usingPostgres = true;
-            String jdbcUrl = toJdbcPostgresUrl(databaseUrl);
-            return DriverManager.getConnection(jdbcUrl);
+        usingPostgres = true;
+        String internalUrl = "postgresql://mia_kelso_user:O9dAaBZMEYGhDVNZ1z46to7ODqpIAMvT@dpg-d7fusqvlk1mc73f0sop0-a/mia_kelso";
+        String externalUrl = "postgresql://mia_kelso_user:O9dAaBZMEYGhDVNZ1z46to7ODqpIAMvT@dpg-d7fusqvlk1mc73f0sop0-a.oregon-postgres.render.com/mia_kelso";
+        try {
+            return DriverManager.getConnection(toJdbcPostgresUrl(internalUrl));
+        } catch (SQLException ignored) {
+            return DriverManager.getConnection(toJdbcPostgresUrl(externalUrl));
         }
-        usingPostgres = false;
-        return DriverManager.getConnection("jdbc:sqlite:forge.db");
     }
 
     static String toJdbcPostgresUrl(String url) {

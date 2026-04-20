@@ -6,12 +6,22 @@
 	<title>About Forge</title>
 	<link rel="stylesheet" href="theme.css" />
 	<style>
+		:root {
+			--forge-bg: #181828;
+			--forge-surface: #202838;
+			--forge-soft: #3c5f6e;
+			--forge-text: #e3d7d8;
+			--forge-accent: #e6a879;
+			--forge-contrast: #181828;
+		}
+
 		* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-		body { background: #0a0a0a; color: #fff; }
+		body { background: var(--forge-bg); color: var(--forge-text); }
 
 		nav {
 			width: 100%;
-			background-color: #111;
+			background-color: var(--forge-surface);
+			border-bottom: 1px solid var(--forge-soft);
 			padding: 15px 30px;
 			display: flex;
 			justify-content: space-between;
@@ -19,13 +29,13 @@
 			position: sticky;
 			top: 0;
 			z-index: 100;
-			box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+			box-shadow: 0 2px 10px rgba(24, 24, 40, 0.45);
 		}
 
 		.logo {
 			font-size: 1.8rem;
 			font-weight: bold;
-			color: #ff6a00;
+			color: var(--forge-accent);
 			text-decoration: none;
 			letter-spacing: 2px;
 		}
@@ -33,14 +43,14 @@
 		.nav-links { display: flex; gap: 18px; flex-wrap: wrap; }
 		.nav-links a {
 			text-decoration: none;
-			color: #fff;
+			color: var(--forge-text);
 			font-weight: 500;
 			padding: 8px 12px;
 			border-radius: 6px;
 			transition: 0.3s;
 		}
-		.nav-links a:hover { background: #ff6a00; color: #000; }
-		.menu-toggle { display: none; font-size: 1.5rem; cursor: pointer; color: #fff; }
+		.nav-links a:hover { background: var(--forge-accent); color: var(--forge-contrast); }
+		.menu-toggle { display: none; font-size: 1.5rem; cursor: pointer; color: var(--forge-text); }
 
 		@media (max-width: 768px) {
 			.nav-links { display: none; }
@@ -50,7 +60,8 @@
 				position: absolute;
 				top: 60px;
 				right: 30px;
-				background-color: #111;
+				background-color: var(--forge-surface);
+				border: 1px solid var(--forge-soft);
 				padding: 15px;
 				border-radius: 8px;
 			}
@@ -60,12 +71,12 @@
 		.hero {
 			padding: 70px 20px 40px;
 			text-align: center;
-			background: linear-gradient(180deg, #1b1b1b 0%, #0a0a0a 100%);
-			border-bottom: 1px solid #262626;
+			background: linear-gradient(180deg, #2a3550 0%, #202838 45%, #181828 100%);
+			border-bottom: 1px solid var(--forge-soft);
 		}
 
 		.hero h1 {
-			color: #ff6a00;
+			color: var(--forge-accent);
 			font-size: clamp(2rem, 5vw, 3.2rem);
 			margin-bottom: 14px;
 			letter-spacing: 1px;
@@ -74,7 +85,7 @@
 		.hero p {
 			max-width: 860px;
 			margin: 0 auto;
-			color: #d7d7d7;
+			color: var(--forge-text);
 			line-height: 1.7;
 			font-size: 1.05rem;
 		}
@@ -89,66 +100,70 @@
 		}
 
 		.card {
-			background: #161616;
-			border: 1px solid #292929;
+			background: linear-gradient(180deg, #273249 0%, #202838 100%);
+			border: 1px solid var(--forge-soft);
 			border-radius: 14px;
 			padding: 20px;
+			box-shadow: 0 10px 30px rgba(34, 39, 57, 0.25);
 		}
 
 		.card h2 {
-			color: #ff6a00;
+			color: var(--forge-accent);
 			margin-bottom: 10px;
 			font-size: 1.2rem;
 		}
 
 		.card p, .card li {
-			color: #d1d1d1;
+			color: var(--forge-text);
 			line-height: 1.65;
 		}
 
 		.card ul { margin-left: 18px; margin-top: 10px; }
 
 		.story {
-			background: #121212;
-			border: 1px solid #282828;
+			background: linear-gradient(180deg, #26314a 0%, #202838 100%);
+			border: 1px solid var(--forge-soft);
 			border-radius: 14px;
 			padding: 24px;
 			margin-bottom: 20px;
+			box-shadow: 0 10px 30px rgba(34, 39, 57, 0.25);
 		}
 
-		.story h2 { color: #ff6a00; margin-bottom: 12px; }
-		.story p { color: #d1d1d1; line-height: 1.75; margin-bottom: 12px; }
+		.story h2 { color: var(--forge-accent); margin-bottom: 12px; }
+		.story p { color: var(--forge-text); line-height: 1.75; margin-bottom: 12px; }
 
 		.cta {
 			margin-top: 8px;
 			text-align: center;
-			background: #1b1b1b;
-			border: 1px solid #2c2c2c;
+			background: linear-gradient(180deg, #2a3550 0%, #202838 100%);
+			border: 1px solid var(--forge-soft);
 			border-radius: 14px;
 			padding: 26px 20px;
+			box-shadow: 0 10px 30px rgba(34, 39, 57, 0.25);
 		}
 
-		.cta h3 { color: #ff6a00; margin-bottom: 10px; }
-		.cta p { color: #cfcfcf; margin-bottom: 16px; }
+		.cta h3 { color: var(--forge-accent); margin-bottom: 10px; }
+		.cta p { color: var(--forge-text); margin-bottom: 16px; }
 
 		.btn {
 			display: inline-block;
-			background: #ff6a00;
-			color: #000;
+			background: var(--forge-accent);
+			color: var(--forge-contrast);
 			text-decoration: none;
 			font-weight: 700;
 			padding: 11px 18px;
+			border: 1px solid var(--forge-soft);
 			border-radius: 10px;
 			transition: 0.25s;
 			margin: 0 6px;
 		}
 
-		.btn:hover { background: #ff8833; }
+		.btn:hover { background: var(--forge-soft); color: var(--forge-contrast); }
 
 		.bottom-bar {
 			width: 100%;
-			background-color: #111;
-			border-top: 1px solid #2a2a2a;
+			background-color: var(--forge-surface);
+			border-top: 1px solid var(--forge-soft);
 			padding: 18px 20px;
 			display: flex;
 			justify-content: center;
@@ -157,7 +172,7 @@
 		}
 
 		.bottom-bar a {
-			color: #fff;
+			color: var(--forge-text);
 			text-decoration: none;
 			font-weight: 500;
 			padding: 8px 12px;
@@ -165,7 +180,7 @@
 			transition: 0.3s;
 		}
 
-		.bottom-bar a:hover { background: #ff6a00; color: #000; }
+		.bottom-bar a:hover { background: var(--forge-accent); color: var(--forge-contrast); }
 	</style>
 </head>
 <body>

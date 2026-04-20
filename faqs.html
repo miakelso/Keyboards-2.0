@@ -6,12 +6,22 @@
 	<title>Forge FAQs</title>
 	<link rel="stylesheet" href="theme.css" />
 	<style>
+		:root {
+			--forge-bg: #181828;
+			--forge-surface: #202838;
+			--forge-soft: #3c5f6e;
+			--forge-text: #e3d7d8;
+			--forge-accent: #e6a879;
+			--forge-contrast: #181828;
+		}
+
 		* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-		body { background: #0a0a0a; color: #fff; }
+		body { background: var(--forge-bg); color: var(--forge-text); }
 
 		nav {
 			width: 100%;
-			background-color: #111;
+			background-color: var(--forge-surface);
+			border-bottom: 1px solid var(--forge-soft);
 			padding: 15px 30px;
 			display: flex;
 			justify-content: space-between;
@@ -19,13 +29,13 @@
 			position: sticky;
 			top: 0;
 			z-index: 100;
-			box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+			box-shadow: 0 2px 10px rgba(24, 24, 40, 0.45);
 		}
 
 		.logo {
 			font-size: 1.8rem;
 			font-weight: bold;
-			color: #ff6a00;
+			color: var(--forge-accent);
 			text-decoration: none;
 			letter-spacing: 2px;
 		}
@@ -33,14 +43,14 @@
 		.nav-links { display: flex; gap: 18px; flex-wrap: wrap; }
 		.nav-links a {
 			text-decoration: none;
-			color: #fff;
+			color: var(--forge-text);
 			font-weight: 500;
 			padding: 8px 12px;
 			border-radius: 6px;
 			transition: 0.3s;
 		}
-		.nav-links a:hover { background: #ff6a00; color: #000; }
-		.menu-toggle { display: none; font-size: 1.5rem; cursor: pointer; color: #fff; }
+		.nav-links a:hover { background: var(--forge-accent); color: var(--forge-contrast); }
+		.menu-toggle { display: none; font-size: 1.5rem; cursor: pointer; color: var(--forge-text); }
 
 		@media (max-width: 768px) {
 			.nav-links { display: none; }
@@ -50,7 +60,8 @@
 				position: absolute;
 				top: 60px;
 				right: 30px;
-				background-color: #111;
+				background-color: var(--forge-surface);
+				border: 1px solid var(--forge-soft);
 				padding: 15px;
 				border-radius: 8px;
 			}
@@ -60,12 +71,12 @@
 		.hero {
 			padding: 70px 20px 40px;
 			text-align: center;
-			background: linear-gradient(180deg, #1b1b1b 0%, #0a0a0a 100%);
-			border-bottom: 1px solid #262626;
+			background: linear-gradient(180deg, #2a3550 0%, #202838 45%, #181828 100%);
+			border-bottom: 1px solid var(--forge-soft);
 		}
 
 		.hero h1 {
-			color: #ff6a00;
+			color: var(--forge-accent);
 			font-size: clamp(2rem, 5vw, 3rem);
 			margin-bottom: 12px;
 		}
@@ -73,7 +84,7 @@
 		.hero p {
 			max-width: 780px;
 			margin: 0 auto;
-			color: #d7d7d7;
+			color: var(--forge-text);
 			line-height: 1.7;
 		}
 
@@ -84,18 +95,19 @@
 		}
 
 		.faq-item {
-			background: #151515;
-			border: 1px solid #292929;
+			background: linear-gradient(180deg, #273249 0%, #202838 100%);
+			border: 1px solid var(--forge-soft);
 			border-radius: 12px;
 			margin-bottom: 12px;
 			overflow: hidden;
+			box-shadow: 0 10px 30px rgba(34, 39, 57, 0.25);
 		}
 
 		.faq-question {
 			width: 100%;
 			background: transparent;
 			border: none;
-			color: #fff;
+			color: var(--forge-text);
 			text-align: left;
 			padding: 16px 18px;
 			font-size: 1rem;
@@ -106,10 +118,10 @@
 			align-items: center;
 		}
 
-		.faq-question:hover { background: #1d1d1d; }
+		.faq-question:hover { background: #2b3854; }
 
 		.icon {
-			color: #ff6a00;
+			color: var(--forge-accent);
 			font-size: 1.15rem;
 			transition: transform 0.25s ease;
 		}
@@ -125,41 +137,46 @@
 
 		.faq-item.active .faq-answer {
 			max-height: 220px;
-			border-top-color: #2a2a2a;
+			border-top-color: var(--forge-soft);
 		}
 
 		.faq-answer p {
-			color: #d0d0d0;
+			color: var(--forge-text);
 			padding: 14px 18px 18px;
 			line-height: 1.7;
 		}
 
 		.help-box {
 			margin-top: 20px;
-			background: #1b1b1b;
-			border: 1px solid #2d2d2d;
+			background: linear-gradient(180deg, #2a3550 0%, #202838 100%);
+			border: 1px solid var(--forge-soft);
 			border-radius: 12px;
 			padding: 20px;
 			text-align: center;
+			box-shadow: 0 10px 30px rgba(34, 39, 57, 0.25);
 		}
 
-		.help-box h3 { color: #ff6a00; margin-bottom: 8px; }
-		.help-box p { color: #d0d0d0; margin-bottom: 12px; }
+		.help-box h3 { color: var(--forge-accent); margin-bottom: 8px; }
+		.help-box p { color: var(--forge-text); margin-bottom: 12px; }
 
 		.btn {
 			display: inline-block;
-			background: #ff6a00;
-			color: #000;
+			background: var(--forge-accent);
+			color: var(--forge-contrast);
 			text-decoration: none;
 			font-weight: 700;
 			padding: 10px 16px;
+			border: 1px solid var(--forge-soft);
 			border-radius: 9px;
+			transition: 0.25s;
 		}
+
+		.btn:hover { background: var(--forge-soft); color: var(--forge-contrast); }
 
 		.bottom-bar {
 			width: 100%;
-			background-color: #111;
-			border-top: 1px solid #2a2a2a;
+			background-color: var(--forge-surface);
+			border-top: 1px solid var(--forge-soft);
 			padding: 18px 20px;
 			display: flex;
 			justify-content: center;
@@ -168,7 +185,7 @@
 		}
 
 		.bottom-bar a {
-			color: #fff;
+			color: var(--forge-text);
 			text-decoration: none;
 			font-weight: 500;
 			padding: 8px 12px;
@@ -176,7 +193,7 @@
 			transition: 0.3s;
 		}
 
-		.bottom-bar a:hover { background: #ff6a00; color: #000; }
+		.bottom-bar a:hover { background: var(--forge-accent); color: var(--forge-contrast); }
 	</style>
 </head>
 <body>
