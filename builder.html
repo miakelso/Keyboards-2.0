@@ -1088,7 +1088,7 @@
         
         // Add audio button for sound question
         if (option.audio) {
-          extraContent = '<button class="audio-btn" onclick="playSound(event)">🔊 Preview</button>';
+          extraContent = `<button class="audio-btn" onclick="playSound(event, '${option.value}')">🔊 Preview</button>`;
         }
         
         // Add size visual for size question
@@ -1262,10 +1262,33 @@
       return mapByField[field][value] || value;
     }
 
-    // Play sound preview (simulated)
-    function playSound(event) {
+    // Play sound preview
+    const soundPreviewFiles = {
+      quiet: 'audio/Silent Switches.mp3',
+      thocky: 'audio/Thocky Switches.mp3',
+      balanced: 'audio/Balanced Switches.mp3',
+      clicky: 'audio/Clicky Switches.mp3'
+    };
+
+    let activePreviewAudio = null;
+
+    function playSound(event, soundType) {
       event.stopPropagation();
-      alert('🔊 Sound preview would play here');
+      const filePath = soundPreviewFiles[soundType];
+      if (!filePath) return;
+
+      // Stop currently playing preview so samples don't overlap
+      if (activePreviewAudio) {
+        activePreviewAudio.pause();
+        activePreviewAudio.currentTime = 0;
+      }
+
+      const audio = new Audio(filePath);
+      activePreviewAudio = audio;
+
+      audio.play().catch(() => {
+        alert(`Could not play preview. Make sure ${filePath} exists.`);
+      });
     }
 
     // Next question
