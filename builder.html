@@ -1264,18 +1264,18 @@
 
     // Play sound preview
     const soundPreviewFiles = {
-      quiet: 'audio/Silent Switches.mp3',
-      thocky: 'audio/Thocky Switches.mp3',
-      balanced: 'audio/Balanced Switches.mp3',
-      clicky: 'audio/Clicky Switches.mp3'
+      quiet: ['audio/Silent Switches.mp3', 'audio/quiet.mp3'],
+      thocky: ['audio/Thocky Switches.mp3', 'audio/thocky.mp3'],
+      balanced: ['audio/Balanced Switches.mp3', 'audio/balanced.mp3'],
+      clicky: ['audio/Clicky Switches.mp3', 'audio/clicky.mp3']
     };
 
     let activePreviewAudio = null;
 
-    function playSound(event, soundType) {
+    async function playSound(event, soundType) {
       event.stopPropagation();
-      const filePath = soundPreviewFiles[soundType];
-      if (!filePath) return;
+      const candidates = soundPreviewFiles[soundType];
+      if (!candidates || !candidates.length) return;
 
       // Stop currently playing preview so samples don't overlap
       if (activePreviewAudio) {
@@ -1283,12 +1283,19 @@
         activePreviewAudio.currentTime = 0;
       }
 
-      const audio = new Audio(filePath);
-      activePreviewAudio = audio;
+      for (const filePath of candidates) {
+        const audio = new Audio(encodeURI(filePath));
+        activePreviewAudio = audio;
 
-      audio.play().catch(() => {
-        alert(`Could not play preview. Make sure ${filePath} exists.`);
-      });
+        try {
+          await audio.play();
+          return;
+        } catch {
+          // Try next candidate path
+        }
+      }
+
+      alert(`Could not play preview. Check files for: ${candidates.join(' or ')}`);
     }
 
     // Next question
